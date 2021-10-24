@@ -2,13 +2,16 @@
 #
 # https://docs.docker.com/engine/reference/builder/#dockerignore-file
 
+# Exclude locally vendored dependencies.
+vendor/
+.env
+
+# Exclude local storage files
+database/
+!database/migrations
+
 # Exclude "build-time" ignore files.
 .dockerignore
-
-# Exclude git history and configuration.
-.gitignore
-.git/
-.github/
 
 # Exclude go tests
 *_test.go
