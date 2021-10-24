@@ -5,3 +5,4 @@ import (
 )
 
 type RESTMethods = routers.RESTMethods
+type Context = routers.Context

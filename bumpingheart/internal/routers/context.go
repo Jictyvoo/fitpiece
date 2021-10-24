@@ -17,7 +17,7 @@ func (ctx Context) GetRouteParam() string {
 	return util.GetDynamicRoute(ctx.request)
 }
 
-func (ctx Context) GetRequest() *http.Request {
+func (ctx Context) Request() *http.Request {
 	return ctx.request
 }
 
@@ -68,15 +68,25 @@ func (ctx *Context) initLocals() {
 	}
 }
 
+// Set sets a key value pair in the context
 func (ctx *Context) Set(key string, value interface{}) {
 	// Initialize the map if it's nil
 	ctx.initLocals()
 	ctx.locals[key] = value
 }
 
+// Get gets a value from the context
 func (ctx Context) Get(key string) interface{} {
 	if ctx.locals != nil {
 		return ctx.locals[key]
 	}
 	return nil
+}
+
+func (ctx *Context) SetHeader(key, value string) {
+	ctx.writer.Header().Set(key, value)
+}
+
+func (ctx Context) GetHeader(key string) string {
+	return ctx.request.Header.Get(key)
 }

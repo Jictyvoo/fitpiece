@@ -18,14 +18,14 @@ func main() {
 	genericRestRouter := bumpingheart.RESTRouter{
 		Namespace: "/api",
 		BatchHandlers: bumpingheart.RESTMethods{
-			List: func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("List"))
+			List: func(ctx *bumpingheart.Context) error {
+				return ctx.SendString("List")
 			},
 		},
 		SpecificHandlers: bumpingheart.RESTMethods{
-			List: func(w http.ResponseWriter, r *http.Request) {
-				id := r.URL.Path
-				w.Write([]byte("Specific List" + id))
+			List: func(ctx *bumpingheart.Context) error {
+				id := ctx.GetRouteParam()
+				return ctx.Send([]byte("Specific List" + id))
 			},
 		},
 	}

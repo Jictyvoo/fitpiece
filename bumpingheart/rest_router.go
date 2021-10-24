@@ -24,7 +24,7 @@ func (rest RESTRouter) setupBatch(restRouter *http.ServeMux) {
 	defaultNamespace := "/" + rest.Namespace
 	if rest.BatchHandlers.List != nil {
 		if len(rest.Parameters) > 0 {
-			restRouter.Handle(defaultNamespace+"/"+rest.Parameters, http.HandlerFunc(rest.BatchHandlers.List))
+			restRouter.Handle(defaultNamespace+"/"+rest.Parameters, routers.RegisterContextHandler(rest.BatchHandlers.List))
 		}
 	}
 }

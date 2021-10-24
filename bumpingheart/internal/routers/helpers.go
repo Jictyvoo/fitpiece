@@ -3,7 +3,7 @@ package routers
 import "net/http"
 
 type (
-	DefaultHandler = func(w http.ResponseWriter, r *http.Request)
+	DefaultHandler = func(ctx *Context) error
 	WrappedRouter  interface {
 		Setup(router DefaultHandler, handlers ...DefaultHandler)
 	}
@@ -22,3 +22,13 @@ const (
 	MethodDelete HttpMethods = "DELETE"
 	MethodPatch  HttpMethods = "PATCH"
 )
+
+func RegisterContextHandler(handler DefaultHandler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := &Context{
+			request: r,
+			writer:  w,
+		}
+		handler(ctx)
+	}
+}
