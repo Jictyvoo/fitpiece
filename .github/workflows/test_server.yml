@@ -56,4 +56,4 @@ jobs:
           submodules: recursive
 
       - name: Test Main Server
-        run: cd ./main_server && go test -v -race ./test
+        run: cd ./main_server && go test -v -race ./...
