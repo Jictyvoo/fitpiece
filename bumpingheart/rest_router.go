@@ -13,7 +13,7 @@ import (
 type RESTRouter struct {
 	Namespace        string
 	BatchHandlers    routers.RESTMethods
-	SpecificHandlers routers.RESTMethods
+	SpecificHandlers routers.WrappedMethods
 	Middlewares      []routers.DefaultHandler
 	SubRouters       routers.WrappedRouter
 	Parameters       string
@@ -42,12 +42,14 @@ func (rest RESTRouter) forbiddenMethod(writer http.ResponseWriter, request *http
 }
 
 func (rest RESTRouter) registerHandlers(writer http.ResponseWriter, request *http.Request) {
+	// TODO: Add middlewares
+
+	startedAt := time.Now()
 	// Check if request path is empty
 	if len(request.URL.Path) == len(rest.Namespace)+1 && request.URL.Path == rest.Namespace+"/" {
 		// Register Batch methods in the router with defaultNamespace
 		rest.BatchHandlers.RegisterMethod(writer, request)
 	} else {
-		log.Println("Request path: ", request.URL.Path)
 		if request.Method == routers.MethodPost.String() {
 			// Check the Create method is not nil
 			rest.forbiddenMethod(writer, request)
@@ -55,6 +57,8 @@ func (rest RESTRouter) registerHandlers(writer http.ResponseWriter, request *htt
 			rest.SpecificHandlers.RegisterMethod(writer, request)
 		}
 	}
+
+	log.Printf("%s - %s", time.Since(startedAt), request.URL.Path)
 }
 
 func (rest RESTRouter) Setup(router *http.ServeMux, handlers ...routers.DefaultHandler) {

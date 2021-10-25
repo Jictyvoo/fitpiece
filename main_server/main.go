@@ -25,7 +25,7 @@ func main() {
 		SpecificHandlers: bumpingheart.RESTMethods{
 			List: func(ctx *bumpingheart.Context) error {
 				id := ctx.GetRouteParam()
-				return ctx.Send([]byte("Specific List" + id))
+				return ctx.Send([]byte("Specific List " + id))
 			},
 		},
 	}
@@ -34,6 +34,7 @@ func main() {
 	serveMux.HandleFunc("/", handler)
 
 	// Start the server, listening on port 8080
+	log.Println("Server Started!\nListening on port 8080")
 	if err := http.ListenAndServe(":8080", serveMux); err != nil {
 		log.Fatalln(err)
 	}

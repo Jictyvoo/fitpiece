@@ -4,7 +4,10 @@ import "net/http"
 
 type (
 	DefaultHandler = func(ctx *Context) error
-	WrappedRouter  interface {
+	WrappedMethods interface {
+		RegisterMethod(writer http.ResponseWriter, request *http.Request)
+	}
+	WrappedRouter interface {
 		Setup(router DefaultHandler, handlers ...DefaultHandler)
 	}
 )
