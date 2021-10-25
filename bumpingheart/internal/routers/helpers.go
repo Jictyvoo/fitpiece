@@ -23,6 +23,8 @@ const (
 	MethodPatch  HttpMethods = "PATCH"
 )
 
+// RegisterContextHandler convert a DefaultHandler to a http.HandlerFunc,
+// by creating and passing a Context to it.
 func RegisterContextHandler(handler DefaultHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := &Context{
