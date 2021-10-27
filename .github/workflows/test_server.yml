@@ -4,12 +4,12 @@ on:
   push:
     branches: [develop]
     paths:
-      - "main_server/**"
+      - "server/**"
       - ".github/workflows/test_server.yml"
   pull_request:
     branches: [develop]
     paths:
-      - "main_server/**"
+      - "server/**"
       - ".github/workflows/test_server.yml"
 
 jobs:
@@ -44,7 +44,7 @@ jobs:
           submodules: recursive
 
       - name: Build
-        run: cd ./main_server && go build -v main.go
+        run: cd ./server && go build -v main.go
 
   tests:
     needs: setup
@@ -56,4 +56,4 @@ jobs:
           submodules: recursive
 
       - name: Test Main Server
-        run: cd ./main_server && go test -v -race ./...
+        run: cd ./server && go test -v -race ./...

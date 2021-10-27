@@ -1,4 +1,4 @@
-module github.com/jictyvoo/fitpiece/main_server
+module github.com/jictyvoo/fitpiece/server
 
 go 1.17
 
