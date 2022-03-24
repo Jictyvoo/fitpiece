@@ -14,13 +14,35 @@ type QueryBuilder struct {
 }
 
 func (query *QueryBuilder) Fields(fields ...string) *QueryBuilder {
-	index := len(query.fields)
+	size := len(query.fields)
 	// Extends the slice cap, to prevent reallocate inside the loop
-	newCap := len(fields) + index
+	newCap := len(fields) + size
 	query.fields = query.fields[:newCap]
+	for index, field := range fields {
+		query.fields[size+index] = elements.FieldExpression{Name: field, Alias: ""}
+	}
+	return query
+}
+
+func (query *QueryBuilder) FieldsAs(fields ...string) *QueryBuilder {
+	size := len(query.fields)
+	newLength := len(fields)
+	// Divide by 2, moving bit to the right
+	newLength = newLength >> 1
+	// Extends the slice cap, to prevent reallocate inside the loop
+	newCap := newLength + size
+	query.fields = query.fields[:newCap]
+
+	var previousField string
+	var index uint = 1
 	for _, field := range fields {
-		query.fields[index] = elements.FieldExpression{Name: field, Alias: ""}
+		if index == 2 {
+			query.fields[size] = elements.FieldExpression{Name: previousField, Alias: field}
+			size++
+			index = 0
+		}
 		index++
+		previousField = field
 	}
 	return query
 }
