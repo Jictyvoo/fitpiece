@@ -13,3 +13,10 @@ func (field FieldExpression) Build() string {
 	}
 	return fmt.Sprintf("%s AS %s", field.Name, field.Alias)
 }
+
+func (field FieldExpression) BuildPlaceholder(placeholder string) (string, []any) {
+	if len(field.Alias) <= 0 {
+		return placeholder, []any{field.Name}
+	}
+	return fmt.Sprintf("%s AS %s", placeholder, placeholder), []any{field.Name, field.Alias}
+}

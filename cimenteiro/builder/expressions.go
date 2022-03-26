@@ -39,12 +39,36 @@ func (expression ArrayElementExpression[T]) Build() string {
 	return builder.String()
 }
 
+func (expression ArrayElementExpression[T]) BuildPlaceholder(placeholder string) (string, []any) {
+	if expression.subQuery != nil {
+		placeholderGen := PlaceholderSqlGenerator{Query: *expression.subQuery}
+		sqlStr, args := placeholderGen.Select()
+		return fmt.Sprintf("(%s)", sqlStr), args
+	}
+	builder := strings.Builder{}
+	valuesList := make([]any, 0, len(expression.values))
+	builder.WriteRune('[')
+	for index, value := range expression.values {
+		if index > 0 {
+			builder.WriteRune(',')
+		}
+		builder.WriteString(placeholder)
+		valuesList = append(valuesList, value)
+	}
+	builder.WriteRune(']')
+	return builder.String(), valuesList
+}
+
 type ValueExpression[T any] struct {
 	value T
 }
 
 func (expression ValueExpression[T]) Build() string {
 	return fmt.Sprintf("%v", expression.value)
+}
+
+func (expression ValueExpression[T]) BuildPlaceholder(placeholder string) (string, []any) {
+	return placeholder, []any{expression.value}
 }
 
 type RawClauseExpression = ValueExpression[string]
