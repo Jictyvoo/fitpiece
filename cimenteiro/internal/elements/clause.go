@@ -5,14 +5,14 @@ import "fmt"
 type operator string
 
 const (
-	OperatorPlus         operator = "+"
-	OperatorMinus        operator = "-"
 	OperatorEqual        operator = "="
 	OperatorDifference   operator = "<>"
 	OperatorGreaterThan  operator = ">"
 	OperatorLessThan     operator = "<"
 	OperatorGreaterEqual operator = ">="
 	OperatorLessEqual    operator = "<="
+	OperatorNotIn        operator = "NOT IN"
+	OperatorIn           operator = "IN"
 )
 
 type Clause struct {
