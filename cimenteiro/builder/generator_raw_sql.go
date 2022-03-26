@@ -69,6 +69,10 @@ func (generator RawSqlGenerator) Select() string {
 	}
 	sqlCommand.WriteString(" FROM ")
 	sqlCommand.WriteString(generator.Query.tableName.Name)
+	for _, joinClause := range generator.Query.joins {
+		sqlCommand.WriteString(joinClause.Build())
+		sqlCommand.WriteRune(' ')
+	}
 	if generator.Query.where != nil {
 		sqlCommand.WriteString(" WHERE ")
 		sqlCommand.WriteString(generator.Query.where.Build())

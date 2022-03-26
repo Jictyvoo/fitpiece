@@ -22,5 +22,5 @@ type Clause struct {
 }
 
 func (c Clause) Build() string {
-	return fmt.Sprintf("%s %s %s", c.FirstHalf, c.Operator, c.SecondHalf)
+	return fmt.Sprintf("%s %s %s", c.FirstHalf.Build(), c.Operator, c.SecondHalf.Build())
 }

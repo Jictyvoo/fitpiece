@@ -23,6 +23,15 @@ type JoinClause struct {
 func (clause JoinClause) Build() string {
 	return fmt.Sprintf(
 		"%s %s ON %s",
-		clause.JoinType, clause.Table, clause.On.Build(),
+		clause.JoinType, clause.Table.String(), clause.On.Build(),
 	)
+}
+
+func (clause JoinClause) Compare(b JoinClause) int {
+	if clause.Table == b.Table &&
+		clause.JoinType == b.JoinType &&
+		clause.On.Build() == b.On.Build() {
+		return 0
+	}
+	return 1
 }
