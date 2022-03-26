@@ -60,6 +60,16 @@ func (query *QueryBuilder) buildJoin(
 	}
 }
 
+func (query *QueryBuilder) CrossJoin(from, with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
+	leftJoin := query.buildJoin(from, with, firstColumn, secondColumn)
+	query.joins = append(query.joins, leftJoin)
+	return query
+}
+
+func (query *QueryBuilder) CrossJoinOrigin(with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
+	return query.CrossJoin(query.tableName, with, firstColumn, secondColumn)
+}
+
 func (query *QueryBuilder) LeftJoin(from, with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	leftJoin := query.buildJoin(from, with, firstColumn, secondColumn)
 	leftJoin.JoinType = elements.JoinLeft
