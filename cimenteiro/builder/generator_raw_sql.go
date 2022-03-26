@@ -32,17 +32,13 @@ func (generator RawSqlGenerator) Update(values map[string]string) string {
 
 func (generator RawSqlGenerator) Insert(values ...string) string {
 	sqlCommand := strings.Builder{}
+
 	sqlCommand.WriteString("INSERT INTO ")
 	sqlCommand.WriteString(generator.Query.tableName.Name)
 	sqlCommand.WriteRune('(')
-
-	for index, fieldName := range generator.Query.fields {
-		if index > 0 {
-			sqlCommand.WriteRune(',')
-		}
-		sqlCommand.WriteString(fieldName.Name)
-	}
+	buildSelectColumns(&sqlCommand, generator.Query)
 	sqlCommand.WriteRune(')')
+
 	sqlCommand.WriteString(" VALUES(")
 	for index, value := range values {
 		if index > 0 {
@@ -56,19 +52,12 @@ func (generator RawSqlGenerator) Insert(values ...string) string {
 
 func (generator RawSqlGenerator) Select() string {
 	sqlCommand := strings.Builder{}
+
 	sqlCommand.WriteString("SELECT ")
-	if len(generator.Query.fields) < 1 {
-		sqlCommand.WriteRune('*')
-	} else {
-		for index, fieldName := range generator.Query.fields {
-			if index > 0 {
-				sqlCommand.WriteRune(',')
-			}
-			sqlCommand.WriteString(fieldName.Build())
-		}
-	}
+	buildSelectColumns(&sqlCommand, generator.Query)
 	sqlCommand.WriteString(" FROM ")
 	sqlCommand.WriteString(generator.Query.tableName.Name)
+
 	for _, joinClause := range generator.Query.joins {
 		sqlCommand.WriteString(joinClause.Build())
 		sqlCommand.WriteRune(' ')
