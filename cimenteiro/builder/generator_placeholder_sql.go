@@ -7,7 +7,7 @@ type PlaceholderSqlGenerator struct {
 	Placeholder string
 }
 
-func (generator PlaceholderSqlGenerator) Update(values map[string]string) (string, []any) {
+func (generator PlaceholderSqlGenerator) Update(values map[string]any) (string, []any) {
 	sqlCommand := strings.Builder{}
 	valuesList := make([]any, 0, len(values))
 
