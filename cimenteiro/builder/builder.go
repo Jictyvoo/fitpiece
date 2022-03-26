@@ -16,13 +16,20 @@ func New(table elements.TableName) QueryBuilder {
 	return QueryBuilder{tableName: table}
 }
 
+func expandSlice[T any](originalSlice []T, newCap uint) []T {
+	expandedSlice := make([]T, len(originalSlice), newCap)
+	copy(expandedSlice, originalSlice)
+	return expandedSlice
+}
+
 func (query *QueryBuilder) Fields(fields ...string) *QueryBuilder {
 	size := len(query.fields)
 	// Extends the slice cap, to prevent reallocate inside the loop
 	newCap := len(fields) + size
-	query.fields = query.fields[:newCap]
-	for index, field := range fields {
-		query.fields[size+index] = elements.FieldExpression{Name: field, Alias: ""}
+	query.fields = expandSlice(query.fields, uint(newCap))
+	// query.fields = query.fields[:newCap]
+	for _, field := range fields {
+		query.fields = append(query.fields, elements.FieldExpression{Name: field, Alias: ""})
 	}
 	return query
 }
@@ -34,14 +41,13 @@ func (query *QueryBuilder) FieldsAs(fields ...string) *QueryBuilder {
 	newLength = newLength >> 1
 	// Extends the slice cap, to prevent reallocate inside the loop
 	newCap := newLength + size
-	query.fields = query.fields[:newCap]
+	query.fields = expandSlice(query.fields, uint(newCap))
 
 	var previousField string
 	var index uint = 1
 	for _, field := range fields {
 		if index == 2 {
-			query.fields[size] = elements.FieldExpression{Name: previousField, Alias: field}
-			size++
+			query.fields = append(query.fields, elements.FieldExpression{Name: previousField, Alias: field})
 			index = 0
 		}
 		index++
