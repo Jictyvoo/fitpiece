@@ -57,7 +57,7 @@ func (generator RawSqlGenerator) Insert(values ...string) string {
 func (generator RawSqlGenerator) Select() string {
 	sqlCommand := strings.Builder{}
 	sqlCommand.WriteString("SELECT ")
-	if len(generator.Query.fields) < 0 {
+	if len(generator.Query.fields) < 1 {
 		sqlCommand.WriteRune('*')
 	} else {
 		for index, fieldName := range generator.Query.fields {

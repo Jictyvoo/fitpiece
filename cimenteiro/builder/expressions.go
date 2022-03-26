@@ -25,7 +25,7 @@ func ArrayExpression[T any](values ...T) ArrayElementExpression[T] {
 func (expression ArrayElementExpression[T]) Build() string {
 	if expression.subQuery != nil {
 		rawGen := RawSqlGenerator{Query: *expression.subQuery}
-		return rawGen.Select()
+		return fmt.Sprintf("(%s)", rawGen.Select())
 	}
 	builder := strings.Builder{}
 	builder.WriteRune('[')

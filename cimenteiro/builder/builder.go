@@ -137,7 +137,7 @@ func (query QueryBuilder) In(clause elements.Expression, values ...any) elements
 	return elements.Clause{
 		FirstHalf:  clause,
 		Operator:   elements.OperatorIn,
-		SecondHalf: ArrayExpression(values),
+		SecondHalf: ArrayExpression(values...),
 	}
 }
 
