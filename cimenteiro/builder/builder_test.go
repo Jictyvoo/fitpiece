@@ -92,11 +92,11 @@ func Test_QueryJoinTypes(t *testing.T) {
 	tableOne := elements.TableName{Name: "table_1"}
 	query := New(tableZero)
 
-	query.CrossJoin(tableZero, tableOne, "id", "id")
-	query.InnerJoin(tableZero, tableOne, "id", "id")
-	query.OuterJoin(tableZero, tableOne, "id", "id")
-	query.LeftJoin(tableZero, tableOne, "id", "id")
-	query.RightJoin(tableZero, tableOne, "id", "id")
+	query.CrossJoin(tableZero, tableOne, "id", "id").
+		InnerJoin(tableZero, tableOne, "id", "id").
+		OuterJoin(tableZero, tableOne, "id", "id").
+		LeftJoin(tableZero, tableOne, "id", "id").
+		RightJoin(tableZero, tableOne, "id", "id")
 
 	if failproof.AssertEqual(t, len(query.joins), 5) {
 		failproof.AssertEqual(t, query.joins[0].JoinType, elements.JoinAll)
