@@ -6,6 +6,10 @@ import (
 	"testing"
 )
 
+func compareJoins(a, b elements.JoinClause) int {
+	return a.Compare(b)
+}
+
 func Test_QueryFields(t *testing.T) {
 	tableObj := elements.TableName{Name: "Test"}
 	query := New(tableObj)
@@ -59,4 +63,46 @@ func Test_QueryFieldsAs_OddParameters(t *testing.T) {
 			testFields[0], testFields[1],
 		},
 	)
+}
+
+func Test_QueryBuildJoin(t *testing.T) {
+	tableZero := elements.TableName{Name: "table_0"}
+	tableOne := elements.TableName{Name: "table_1"}
+	query := New(tableZero)
+	testJoins := elements.JoinClause{
+		JoinType: elements.JoinAll,
+		Table:    tableOne,
+		On: elements.Clause{
+			FirstHalf:  elements.FieldExpression{Name: tableZero.Column("id")},
+			Operator:   elements.OperatorEqual,
+			SecondHalf: elements.FieldExpression{Name: tableOne.Column("id")},
+		},
+	}
+
+	query.CrossJoin(tableZero, tableOne, "id", "id")
+	if failproof.AssertEqual(t, len(query.joins), 1) {
+		failproof.AssertEqualCompare(t, compareJoins, query.joins[0], testJoins)
+		failproof.AssertEqual(t, query.joins[0].Build(), testJoins.Build())
+		failproof.AssertEqual(t, testJoins.Build(), "JOIN table_1 ON `table_0`.`id` = `table_1`.`id`")
+	}
+}
+
+func Test_QueryJoinTypes(t *testing.T) {
+	tableZero := elements.TableName{Name: "table_0"}
+	tableOne := elements.TableName{Name: "table_1"}
+	query := New(tableZero)
+
+	query.CrossJoin(tableZero, tableOne, "id", "id")
+	query.InnerJoin(tableZero, tableOne, "id", "id")
+	query.OuterJoin(tableZero, tableOne, "id", "id")
+	query.LeftJoin(tableZero, tableOne, "id", "id")
+	query.RightJoin(tableZero, tableOne, "id", "id")
+
+	if failproof.AssertEqual(t, len(query.joins), 5) {
+		failproof.AssertEqual(t, query.joins[0].JoinType, elements.JoinAll)
+		failproof.AssertEqual(t, query.joins[1].JoinType, elements.JoinInner)
+		failproof.AssertEqual(t, query.joins[2].JoinType, elements.JoinOuter)
+		failproof.AssertEqual(t, query.joins[3].JoinType, elements.JoinLeft)
+		failproof.AssertEqual(t, query.joins[4].JoinType, elements.JoinRight)
+	}
 }
