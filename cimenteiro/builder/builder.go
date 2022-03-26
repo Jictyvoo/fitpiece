@@ -12,6 +12,10 @@ type QueryBuilder struct {
 	organizers []elements.Expression
 }
 
+func New(table elements.TableName) QueryBuilder {
+	return QueryBuilder{tableName: table}
+}
+
 func (query *QueryBuilder) Fields(fields ...string) *QueryBuilder {
 	size := len(query.fields)
 	// Extends the slice cap, to prevent reallocate inside the loop
