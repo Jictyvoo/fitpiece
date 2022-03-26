@@ -1,4 +1,4 @@
-module github.com/Wrapped-Owls/fitpiece/cimenteiro
+module github.com/wrapped-owls/fitpiece/cimenteiro
 
 go 1.18
 

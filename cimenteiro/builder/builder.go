@@ -1,7 +1,7 @@
 package builder
 
 import (
-	"github.com/Wrapped-Owls/fitpiece/cimenteiro/internal/elements"
+	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 )
 
 type QueryBuilder struct {

@@ -2,8 +2,8 @@ package cimenteiro
 
 import (
 	"database/sql"
-	"github.com/Wrapped-Owls/fitpiece/cimenteiro/builder"
-	"github.com/Wrapped-Owls/fitpiece/cimenteiro/internal/elements"
+	"github.com/wrapped-owls/fitpiece/cimenteiro/builder"
+	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 )
 
 type Table = elements.TableName
