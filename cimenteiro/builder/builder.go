@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/builder/expressions"
 	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 )
 
@@ -134,19 +135,19 @@ func (query *QueryBuilder) Where(whereClause elements.Expression) *QueryBuilder 
 **********************************************/
 
 func (query QueryBuilder) Not(expression elements.Expression) elements.Expression {
-	return NewPrefixExpression("NOT", expression)
+	return expressions.NewPrefixExpression("NOT", expression)
 }
 
 // RawClause is a clause that is not a field expression
 func (query QueryBuilder) RawClause(expression string) elements.Expression {
-	return RawExpression(expression)
+	return expressions.RawExpression(expression)
 }
 
 func (query QueryBuilder) In(clause elements.Expression, values ...any) elements.Clause {
 	return elements.Clause{
 		FirstHalf:  clause,
 		Operator:   elements.OperatorIn,
-		SecondHalf: ArrayExpression(values...),
+		SecondHalf: expressions.ArrayExpression(values...),
 	}
 }
 
@@ -154,7 +155,7 @@ func (query QueryBuilder) InQuery(clause elements.Expression, subQuery *QueryBui
 	return elements.Clause{
 		FirstHalf:  clause,
 		Operator:   elements.OperatorIn,
-		SecondHalf: SubQuery[any](subQuery),
+		SecondHalf: SubQuery(subQuery),
 	}
 }
 
@@ -176,7 +177,7 @@ func (query QueryBuilder) Equal(column string, value any) elements.Clause {
 			Name: column,
 		},
 		Operator:   elements.OperatorEqual,
-		SecondHalf: ValueExpression[any]{value: value},
+		SecondHalf: expressions.NewValueExpression(value),
 	}
 }
 

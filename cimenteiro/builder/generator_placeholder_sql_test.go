@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/builder/expressions"
 	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 	"github.com/wrapped-owls/fitpiece/heartcore/failproof"
 	"testing"
@@ -29,7 +30,7 @@ func TestPlaceholderSqlGenerator_Select(t *testing.T) {
 		query.Not(
 			query.And(
 				query.Different("type", "cimento"),
-				query.NotIn(ValueExpression[int]{value: 49}, 10, 20, 30, 40, 50),
+				query.NotIn(expressions.NewValueExpression(49), 10, 20, 30, 40, 50),
 			),
 		),
 	)
@@ -90,7 +91,7 @@ func TestPlaceholderSqlGenerator_Select__Join(t *testing.T) {
 			query.Or(
 				query.And(
 					query.LessEqual("price", 91.5),
-					query.InQuery(ValueExpression[string]{"tijolo"}, &subQuery),
+					query.InQuery(expressions.NewValueExpression("tijolo"), &subQuery),
 				),
 				query.Equal(
 					"delivered_at",
@@ -124,7 +125,7 @@ func TestPlaceholderSqlGenerator_Update(t *testing.T) {
 	// Test simple query
 	query.Where(
 		query.Or(
-			query.In(NewFieldExpression("pet"), "cat", "dog", "elephant", "tiger", "lion"),
+			query.In(expressions.NewFieldExpression("pet"), "cat", "dog", "elephant", "tiger", "lion"),
 			query.Equal("type", "telha"),
 		),
 	)
@@ -174,7 +175,7 @@ func TestPlaceholderSqlGenerator_Delete(t *testing.T) {
 	query.Where(
 		query.Or(
 			query.And(
-				query.In(NewFieldExpression("version"), "1.14", "1.16", "1.17", "1.18"),
+				query.In(expressions.NewFieldExpression("version"), "1.14", "1.16", "1.17", "1.18"),
 				query.Equal("language", "go"),
 			),
 			query.GreaterEqual("version", "1.13"),

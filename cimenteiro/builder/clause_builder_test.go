@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/builder/expressions"
 	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 	"github.com/wrapped-owls/fitpiece/heartcore/failproof"
 	"testing"
@@ -17,7 +18,7 @@ func Test_ExpressionBuilder(t *testing.T) {
 	query.Where(
 		query.And(
 			query.Different("type", 1),
-			query.NotIn(ValueExpression[int]{value: 2}, 1, 2, 3, 4, 5),
+			query.NotIn(expressions.NewValueExpression(2), 1, 2, 3, 4, 5),
 		),
 	)
 	failproof.AssertEqual(t, query.where.Build(), "type <> 1 AND 2 NOT IN [1,2,3,4,5]")
@@ -28,7 +29,7 @@ func Test_ExpressionBuilder(t *testing.T) {
 		secondQuery.Or(
 			secondQuery.And(
 				secondQuery.LessEqual("price", 8000),
-				secondQuery.InQuery(ValueExpression[string]{"car"}, &query),
+				secondQuery.InQuery(expressions.NewValueExpression("car"), &query),
 			),
 			secondQuery.Equal("size", "\"BIG\""),
 		),
