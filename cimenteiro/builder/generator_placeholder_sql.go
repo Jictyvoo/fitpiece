@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 	"sort"
 	"strings"
 )
@@ -16,7 +17,7 @@ func (generator PlaceholderSqlGenerator) buildWhere(sqlCommand Writer, valuesLis
 		strResult, args := generator.Query.where.BuildPlaceholder(generator.Placeholder)
 		valuesList = append(valuesList, args...)
 
-		strResult = removeBrackets(strResult)
+		strResult = utils.RemoveBrackets(strResult)
 		_, _ = sqlCommand.WriteString(strResult)
 	}
 	return valuesList
