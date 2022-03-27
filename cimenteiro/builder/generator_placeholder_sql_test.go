@@ -26,15 +26,17 @@ func TestPlaceholderSqlGenerator_Select(t *testing.T) {
 
 	// Test simple query
 	query.Where(
-		query.And(
-			query.Different("type", "cimento"),
-			query.NotIn(ValueExpression[int]{value: 49}, 10, 20, 30, 40, 50),
+		query.Not(
+			query.And(
+				query.Different("type", "cimento"),
+				query.NotIn(ValueExpression[int]{value: 49}, 10, 20, 30, 40, 50),
+			),
 		),
 	)
 
 	generator := PlaceholderSqlGenerator{Query: &query, Placeholder: "?"}
 	sqlStr, args := generator.Select()
-	failproof.AssertEqual(t, sqlStr, "SELECT * FROM table_0 WHERE type <> ? AND ? NOT IN [?,?,?,?,?]")
+	failproof.AssertEqual(t, sqlStr, "SELECT * FROM table_0 WHERE NOT (type <> ? AND ? NOT IN [?,?,?,?,?])")
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,
 		args, []any{"cimento", 49, 10, 20, 30, 40, 50},
@@ -54,7 +56,7 @@ func TestPlaceholderSqlGenerator_Select(t *testing.T) {
 	failproof.AssertEqual(
 		t, sqlStr,
 		"SELECT id, name, type, id AS id_field, name AS name_field, type AS type_field "+
-			"FROM table_0 WHERE type <> ? AND ? NOT IN [?,?,?,?,?]",
+			"FROM table_0 WHERE NOT (type <> ? AND ? NOT IN [?,?,?,?,?])",
 	)
 }
 
