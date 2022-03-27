@@ -11,11 +11,8 @@ func ArrayExpression[T any](values ...T) ArrayElementExpression[T] {
 	}
 }
 
-func MultiValueExpression[T any](wrappers [2]rune, values ...T) ArrayElementExpression[T] {
-	return ArrayElementExpression[T]{
-		values: values,
-		wrapIn: wrappers,
-	}
+func MultiValueExpression[T ValueFieldType](wrappers [2]rune, values ...T) DirectValueArrayExpression[T] {
+	return DirectValueArrayExpression[T]{values: values, wrapIn: wrappers}
 }
 
 func RawExpression(expression string) RawClauseExpression {
