@@ -13,7 +13,7 @@ func compareAnySlice(a, b []any) int {
 		return len(a) - len(b)
 	}
 	difference := 0
-	for index, _ := range a {
+	for index := range a {
 		if a[index] != b[index] {
 			difference++
 		}
@@ -37,7 +37,7 @@ func TestPlaceholderSqlGenerator_Select(t *testing.T) {
 
 	generator := PlaceholderSqlGenerator{Query: &query, Placeholder: "?"}
 	sqlStr, args := generator.Select()
-	failproof.AssertEqual(t, sqlStr, "SELECT * FROM table_0 WHERE NOT (type <> ? AND ? NOT IN [?,?,?,?,?])")
+	failproof.AssertEqual(t, sqlStr, "SELECT * FROM table_0 WHERE NOT (type <> ? AND ? NOT IN [?, ?, ?, ?, ?])")
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,
 		args, []any{"cimento", 49, 10, 20, 30, 40, 50},
@@ -57,7 +57,7 @@ func TestPlaceholderSqlGenerator_Select(t *testing.T) {
 	failproof.AssertEqual(
 		t, sqlStr,
 		"SELECT id, name, type, id AS id_field, name AS name_field, type AS type_field "+
-			"FROM table_0 WHERE NOT (type <> ? AND ? NOT IN [?,?,?,?,?])",
+			"FROM table_0 WHERE NOT (type <> ? AND ? NOT IN [?, ?, ?, ?, ?])",
 	)
 }
 
@@ -118,6 +118,43 @@ func TestPlaceholderSqlGenerator_Select__Join(t *testing.T) {
 	)
 }
 
+func TestPlaceholderSqlGenerator_Select__OrderBy(t *testing.T) {
+	tableZero := elements.TableName{Name: "table_0"}
+	query := New(tableZero)
+
+	generator := PlaceholderSqlGenerator{
+		Placeholder: "?",
+		Query: query.Where(
+			query.Not(
+				query.GreaterThan("id", 42),
+			),
+		).
+			OrderBy("id", "name", "value").
+			GroupBy("id", "name").
+			Having(
+				query.NotIn(
+					expressions.NewValueExpression("language"), "python", "java", "kotlin", "c++",
+				),
+			).
+			Limit(100).
+			Offset(9),
+	}
+
+	sqlStr, args := generator.Select()
+	failproof.AssertEqual(
+		t, sqlStr,
+		"SELECT * FROM table_0 WHERE NOT id > ? "+
+			"GROUP BY id, name "+
+			"HAVING ? NOT IN [?, ?, ?, ?] "+
+			"ORDER BY id, name, value ASC "+
+			"LIMIT ? OFFSET ?",
+	)
+	failproof.AssertEqualCompare[[]any](
+		t, compareAnySlice,
+		args, []any{42, "language", "python", "java", "kotlin", "c++", 100, 9},
+	)
+}
+
 func TestPlaceholderSqlGenerator_Update(t *testing.T) {
 	tableZero := elements.TableName{Name: "table_0"}
 	query := New(tableZero)
@@ -141,7 +178,7 @@ func TestPlaceholderSqlGenerator_Update(t *testing.T) {
 	})
 	failproof.AssertEqual(
 		t, sqlStr,
-		"UPDATE table_0 SET name = ?, size = ?, type = ?, updated_at = ? WHERE pet IN [?,?,?,?,?] OR type = ?",
+		"UPDATE table_0 SET name = ?, size = ?, type = ?, updated_at = ? WHERE pet IN [?, ?, ?, ?, ?] OR type = ?",
 	)
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,
@@ -186,7 +223,7 @@ func TestPlaceholderSqlGenerator_Delete(t *testing.T) {
 	sqlStr, args := generator.Delete()
 	failproof.AssertEqual(
 		t, sqlStr,
-		"DELETE FROM test_table WHERE (version IN [?,?,?,?] AND language = ?) OR version >= ?",
+		"DELETE FROM test_table WHERE (version IN [?, ?, ?, ?] AND language = ?) OR version >= ?",
 	)
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,

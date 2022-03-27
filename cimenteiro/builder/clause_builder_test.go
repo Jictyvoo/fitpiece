@@ -21,7 +21,7 @@ func Test_ExpressionBuilder(t *testing.T) {
 			query.NotIn(expressions.NewValueExpression(2), 1, 2, 3, 4, 5),
 		),
 	)
-	failproof.AssertEqual(t, query.where.Build(), "type <> 1 AND 2 NOT IN [1,2,3,4,5]")
+	failproof.AssertEqual(t, query.where.Build(), "type <> 1 AND 2 NOT IN [1, 2, 3, 4, 5]")
 
 	// Test deeper interaction
 	secondQuery := New(tableZero)
@@ -36,6 +36,6 @@ func Test_ExpressionBuilder(t *testing.T) {
 	)
 	failproof.AssertEqual(
 		t, secondQuery.where.Build(),
-		"price <= 8000 AND car IN (SELECT * FROM table_0 WHERE type <> 1 AND 2 NOT IN [1,2,3,4,5]) OR size = \"BIG\"",
+		"price <= 8000 AND car IN (SELECT * FROM table_0 WHERE type <> 1 AND 2 NOT IN [1, 2, 3, 4, 5]) OR size = \"BIG\"",
 	)
 }
