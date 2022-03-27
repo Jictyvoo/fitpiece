@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/builder/expressions"
 	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 )
 
@@ -9,7 +10,7 @@ type QueryBuilder struct {
 	fields     []elements.FieldExpression
 	joins      []elements.JoinClause
 	where      elements.Expression
-	organizers []elements.Expression
+	organizers map[elements.Organizer]elements.Expression
 }
 
 func New(table elements.TableName) QueryBuilder {
@@ -126,5 +127,65 @@ func (query *QueryBuilder) OuterJoinOrigin(with elements.TableName, firstColumn,
 
 func (query *QueryBuilder) Where(whereClause elements.Expression) *QueryBuilder {
 	query.where = whereClause
+	return query
+}
+
+// GroupBy Creates the group expression and add it to the query
+func (query *QueryBuilder) GroupBy(fields ...string) *QueryBuilder {
+	query.organizers[elements.OrganizerGroup] = expressions.PrefixExpression(
+		"GROUP BY", expressions.MultiValueExpression([2]rune{0, 0}, fields...),
+	)
+	return query
+}
+
+// Having specify HAVING conditions for GROUP BY
+func (query *QueryBuilder) Having(expression elements.Expression) *QueryBuilder {
+	query.organizers[elements.OrganizerHaving] = expressions.PrefixExpression(
+		"HAVING", expression,
+	)
+	return query
+}
+
+func (query QueryBuilder) buildOrderBy(desc bool, columns ...string) elements.Expression {
+	sortType := "ASC"
+	if desc {
+		sortType = "DESC"
+	}
+	return expressions.SuffixExpression(
+		expressions.PrefixExpression(
+			"ORDER BY", expressions.MultiValueExpression([2]rune{0, 0}, columns...),
+		),
+		sortType,
+	)
+}
+
+// OrderBy specify order when retrieve records from database
+func (query *QueryBuilder) OrderBy(columns ...string) *QueryBuilder {
+	query.organizers[elements.OrganizerGroup] = query.buildOrderBy(false, columns...)
+	return query
+}
+
+// OrderByDesc specify order when retrieve records from database
+func (query *QueryBuilder) OrderByDesc(columns ...string) *QueryBuilder {
+	query.organizers[elements.OrganizerGroup] = query.buildOrderBy(true, columns...)
+	return query
+}
+
+// Limit specify the number of records to be retrieved
+// TODO: Create dialects to know how to create the statements
+func (query *QueryBuilder) Limit(limit int) *QueryBuilder {
+	query.organizers[elements.OrganizerLimit] = expressions.PrefixExpression(
+		"LIMIT",
+		expressions.NewValueExpression(limit),
+	)
+	return query
+}
+
+// Offset specify the number of records to skip before starting to return the records
+func (query *QueryBuilder) Offset(offset int) *QueryBuilder {
+	query.organizers[elements.OrganizerLimit] = expressions.PrefixExpression(
+		"OFFSET",
+		expressions.NewValueExpression(offset),
+	)
 	return query
 }

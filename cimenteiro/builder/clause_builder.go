@@ -10,7 +10,7 @@ import (
 **********************************************/
 
 func (query QueryBuilder) Not(expression elements.Expression) elements.Expression {
-	return expressions.NewPrefixExpression("NOT", expression)
+	return expressions.PrefixExpression("NOT", expression)
 }
 
 // RawClause is a clause that is not a field expression
