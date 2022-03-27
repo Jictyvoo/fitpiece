@@ -10,6 +10,14 @@ func ArrayExpression[T any](values ...T) ArrayElementExpression[T] {
 	}
 }
 
+func RawExpression(expression string) RawClauseExpression {
+	return RawClauseExpression{expression}
+}
+
+func NewPrefixExpression(prefix string, value elements.Expression) PrefixClauseExpression {
+	return PrefixClauseExpression{prefix: prefix, value: value}
+}
+
 func NewFieldExpression(name string) elements.Expression {
 	return elements.FieldExpression{Name: name}
 }

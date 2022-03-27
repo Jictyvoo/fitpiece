@@ -10,10 +10,6 @@ type PrefixClauseExpression struct {
 	value  elements.Expression
 }
 
-func NewPrefixExpression(prefix string, value elements.Expression) PrefixClauseExpression {
-	return PrefixClauseExpression{prefix: prefix, value: value}
-}
-
 func (expression PrefixClauseExpression) Build() string {
 	return fmt.Sprintf("%s %s", expression.prefix, expression.value.Build())
 }
