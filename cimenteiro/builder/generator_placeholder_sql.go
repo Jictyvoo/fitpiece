@@ -3,7 +3,7 @@ package builder
 import "strings"
 
 type PlaceholderSqlGenerator struct {
-	Query       QueryBuilder
+	Query       *QueryBuilder
 	Placeholder string
 }
 
@@ -42,7 +42,7 @@ func (generator PlaceholderSqlGenerator) Insert(values ...any) (string, []any) {
 	sqlCommand.WriteString("INSERT INTO ")
 	sqlCommand.WriteString(generator.Query.tableName.Name)
 	sqlCommand.WriteRune('(')
-	buildSelectColumns(&sqlCommand, generator.Query)
+	buildSelectColumns(&sqlCommand, *generator.Query)
 	sqlCommand.WriteRune(')')
 
 	sqlCommand.WriteString(" VALUES(")
@@ -62,11 +62,11 @@ func (generator PlaceholderSqlGenerator) Select() (string, []any) {
 	valuesList := make([]any, 0, len(generator.Query.fields))
 
 	sqlCommand.WriteString("SELECT ")
-	buildSelectColumns(&sqlCommand, generator.Query)
+	buildSelectColumns(&sqlCommand, *generator.Query)
 	sqlCommand.WriteString(" FROM ")
 	sqlCommand.WriteString(generator.Query.tableName.Name)
 
-	buildJoinClauses(&sqlCommand, generator.Query)
+	buildJoinClauses(&sqlCommand, *generator.Query)
 	if generator.Query.where != nil {
 		sqlCommand.WriteString(" WHERE ")
 		whereGen, args := generator.Query.where.BuildPlaceholder(generator.Placeholder)

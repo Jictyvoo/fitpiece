@@ -41,7 +41,7 @@ func (expression ArrayElementExpression[T]) Build() string {
 
 func (expression ArrayElementExpression[T]) BuildPlaceholder(placeholder string) (string, []any) {
 	if expression.subQuery != nil {
-		placeholderGen := PlaceholderSqlGenerator{Query: *expression.subQuery}
+		placeholderGen := PlaceholderSqlGenerator{Query: expression.subQuery, Placeholder: placeholder}
 		sqlStr, args := placeholderGen.Select()
 		return fmt.Sprintf("(%s)", sqlStr), args
 	}

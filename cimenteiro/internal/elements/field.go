@@ -16,7 +16,7 @@ func (field FieldExpression) Build() string {
 
 func (field FieldExpression) BuildPlaceholder(placeholder string) (string, []any) {
 	if len(field.Alias) <= 0 {
-		return placeholder, []any{field.Name}
+		return field.Name, []any{}
 	}
-	return fmt.Sprintf("%s AS %s", placeholder, placeholder), []any{field.Name, field.Alias}
+	return fmt.Sprintf("%s AS %s", field.Name, field.Alias), []any{}
 }
