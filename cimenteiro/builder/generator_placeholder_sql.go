@@ -10,6 +10,18 @@ type PlaceholderSqlGenerator struct {
 	Placeholder string
 }
 
+func (generator PlaceholderSqlGenerator) buildWhere(sqlCommand Writer, valuesList []any) []any {
+	if generator.Query.where != nil {
+		_, _ = sqlCommand.WriteString(" WHERE ")
+		strResult, args := generator.Query.where.BuildPlaceholder(generator.Placeholder)
+		valuesList = append(valuesList, args...)
+
+		strResult = removeBrackets(strResult)
+		_, _ = sqlCommand.WriteString(strResult)
+	}
+	return valuesList
+}
+
 func (generator PlaceholderSqlGenerator) Update(values map[string]any) (string, []any) {
 	sqlCommand := strings.Builder{}
 	valuesList := make([]any, 0, len(values))
@@ -38,12 +50,7 @@ func (generator PlaceholderSqlGenerator) Update(values map[string]any) (string, 
 		field, _ := values[column]
 		valuesList = append(valuesList, field)
 	}
-	if generator.Query.where != nil {
-		sqlCommand.WriteString(" WHERE ")
-		whereGen, args := generator.Query.where.BuildPlaceholder(generator.Placeholder)
-		valuesList = append(valuesList, args...)
-		sqlCommand.WriteString(whereGen)
-	}
+	valuesList = generator.buildWhere(&sqlCommand, valuesList)
 	return sqlCommand.String(), valuesList
 }
 
@@ -80,12 +87,7 @@ func (generator PlaceholderSqlGenerator) Select() (string, []any) {
 	sqlCommand.WriteString(generator.Query.tableName.Name)
 
 	buildJoinClauses(&sqlCommand, *generator.Query)
-	if generator.Query.where != nil {
-		sqlCommand.WriteString(" WHERE ")
-		whereGen, args := generator.Query.where.BuildPlaceholder(generator.Placeholder)
-		valuesList = append(valuesList, args...)
-		sqlCommand.WriteString(whereGen)
-	}
+	valuesList = generator.buildWhere(&sqlCommand, valuesList)
 	if len(generator.Query.organizers) > 0 {
 		for _, item := range generator.Query.organizers {
 			sqlCommand.WriteRune(' ')
@@ -102,11 +104,6 @@ func (generator PlaceholderSqlGenerator) Delete() (string, []any) {
 
 	sqlCommand.WriteString("DELETE FROM ")
 	sqlCommand.WriteString(generator.Query.tableName.Name)
-	if generator.Query.where != nil {
-		sqlCommand.WriteString(" WHERE ")
-		strResult, args := generator.Query.where.BuildPlaceholder(generator.Placeholder)
-		valuesList = args
-		sqlCommand.WriteString(strResult)
-	}
+	valuesList = generator.buildWhere(&sqlCommand, valuesList)
 	return sqlCommand.String(), valuesList
 }

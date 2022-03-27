@@ -16,6 +16,8 @@ const (
 	OperatorLessEqual    operator = "<="
 	OperatorNotIn        operator = "NOT IN"
 	OperatorIn           operator = "IN"
+	OperatorAnd          operator = "AND"
+	OperatorOr           operator = "OR"
 )
 
 type Clause struct {
@@ -32,6 +34,12 @@ func (c Clause) BuildPlaceholder(placeholder string) (string, []any) {
 	valueList := make([]any, 0, 2)
 	stringBuilder := strings.Builder{}
 
+	// Checker for brackets
+	writeBrackets := c.Operator == OperatorAnd || c.Operator == OperatorOr
+	if writeBrackets {
+		stringBuilder.WriteString("(")
+	}
+
 	// Write first half
 	strResult, argsResult := c.FirstHalf.BuildPlaceholder(placeholder)
 	stringBuilder.WriteString(strResult)
@@ -46,5 +54,10 @@ func (c Clause) BuildPlaceholder(placeholder string) (string, []any) {
 	strResult, argsResult = c.SecondHalf.BuildPlaceholder(placeholder)
 	stringBuilder.WriteString(strResult)
 	valueList = append(valueList, argsResult...)
+
+	// Close brackets
+	if writeBrackets {
+		stringBuilder.WriteRune(')')
+	}
 	return stringBuilder.String(), valueList
 }
