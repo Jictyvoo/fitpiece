@@ -11,7 +11,7 @@ func ArrayExpression[T any](values ...T) ArrayElementExpression[T] {
 	}
 }
 
-func MultiValueExpression[T ValueFieldType](wrappers [2]rune, values ...T) DirectValueArrayExpression[T] {
+func MultiDirectValueExpression[T ValueFieldType](wrappers [2]rune, values ...T) DirectValueArrayExpression[T] {
 	return DirectValueArrayExpression[T]{values: values, wrapIn: wrappers}
 }
 

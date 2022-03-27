@@ -133,7 +133,7 @@ func (query *QueryBuilder) Where(whereClause elements.Expression) *QueryBuilder 
 // GroupBy Creates the group expression and add it to the query
 func (query *QueryBuilder) GroupBy(fields ...string) *QueryBuilder {
 	query.organizers[elements.OrganizerGroup] = expressions.PrefixExpression(
-		"GROUP BY", expressions.MultiValueExpression([2]rune{0, 0}, fields...),
+		"GROUP BY", expressions.MultiDirectValueExpression([2]rune{0, 0}, fields...),
 	)
 	return query
 }
@@ -153,7 +153,7 @@ func (query QueryBuilder) buildOrderBy(desc bool, columns ...string) elements.Ex
 	}
 	return expressions.SuffixExpression(
 		expressions.PrefixExpression(
-			"ORDER BY", expressions.MultiValueExpression([2]rune{0, 0}, columns...),
+			"ORDER BY", expressions.MultiDirectValueExpression([2]rune{0, 0}, columns...),
 		),
 		sortType,
 	)
