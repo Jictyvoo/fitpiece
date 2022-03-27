@@ -1,6 +1,9 @@
 package builder
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 type PlaceholderSqlGenerator struct {
 	Query       *QueryBuilder
@@ -15,15 +18,24 @@ func (generator PlaceholderSqlGenerator) Update(values map[string]any) (string, 
 	sqlCommand.WriteString(generator.Query.tableName.String())
 	sqlCommand.WriteString(" SET ")
 	counter := 0
-	for column, field := range values {
+
+	// take the keys and order them
+	keys := make([]string, 0, len(values))
+	for key := range values {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, column := range keys {
 		if counter > 0 {
 			sqlCommand.WriteRune(',')
+			sqlCommand.WriteRune(' ')
 		}
 		counter++
 		sqlCommand.WriteString(column)
 		sqlCommand.WriteString(" = ")
 
 		sqlCommand.WriteString(generator.Placeholder)
+		field, _ := values[column]
 		valuesList = append(valuesList, field)
 	}
 	if generator.Query.where != nil {

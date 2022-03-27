@@ -138,7 +138,7 @@ func TestPlaceholderSqlGenerator_Update(t *testing.T) {
 	})
 	failproof.AssertEqual(
 		t, sqlStr,
-		"UPDATE table_0 SET name = ?, type = ?, size = ?, updated_at = ? WHERE pet IN [?,?,?,?,?] OR type = ?",
+		"UPDATE table_0 SET name = ?, size = ?, type = ?, updated_at = ? WHERE pet IN [?,?,?,?,?] OR type = ?",
 	)
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,

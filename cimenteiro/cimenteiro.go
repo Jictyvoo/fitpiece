@@ -10,7 +10,7 @@ type Table = elements.TableName
 
 type Cimenteiro struct {
 	db          *sql.DB
-	builder     builder.QueryBuilder
+	builder     *builder.QueryBuilder
 	PlaceHolder string
 }
 
@@ -32,8 +32,9 @@ func (cimenteiro *Cimenteiro) Attach(table Table) *builder.QueryBuilder {
 	if len(cimenteiro.PlaceHolder) < 1 {
 		cimenteiro.PlaceHolder = "?"
 	}
-	cimenteiro.builder = builder.New(table)
-	return &cimenteiro.builder
+	queryBuilder := builder.New(table)
+	cimenteiro.builder = &queryBuilder
+	return cimenteiro.builder
 }
 
 func (cimenteiro Cimenteiro) Select() (*sql.Rows, error) {
