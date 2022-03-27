@@ -24,7 +24,7 @@ func TestPlaceholderSqlGenerator_Select(t *testing.T) {
 	tableZero := elements.TableName{Name: "table_0"}
 	query := New(tableZero)
 
-	// Test more complex query
+	// Test simple query
 	query.Where(
 		query.And(
 			query.Different("type", "cimento"),
@@ -112,5 +112,36 @@ func TestPlaceholderSqlGenerator_Select__Join(t *testing.T) {
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,
 		args, []any{91.5, "tijolo", "argamassa", 630, testDate},
+	)
+}
+
+func TestPlaceholderSqlGenerator_Update(t *testing.T) {
+	tableZero := elements.TableName{Name: "table_0"}
+	query := New(tableZero)
+
+	// Test simple query
+	query.Where(
+		query.Or(
+			query.In(NewFieldExpression("pet"), "cat", "dog", "elephant", "tiger", "lion"),
+			query.Equal("type", "telha"),
+		),
+	)
+
+	generator := PlaceholderSqlGenerator{Query: &query, Placeholder: "?"}
+	testDate := time.Date(1568, time.May, 19, 5, 18, 59, 26, time.UTC)
+
+	sqlStr, args := generator.Update(map[string]any{
+		"name":       "avocado",
+		"type":       "fruit",
+		"size":       7284,
+		"updated_at": testDate,
+	})
+	failproof.AssertEqual(
+		t, sqlStr,
+		"UPDATE table_0 SET name = ?, type = ?, size = ?, updated_at = ? WHERE pet IN [?,?,?,?,?] OR type = ?",
+	)
+	failproof.AssertEqualCompare[[]any](
+		t, compareAnySlice,
+		args, []any{"avocado", "fruit", 7284, testDate, "cat", "dog", "elephant", "tiger", "lion", "telha"},
 	)
 }
