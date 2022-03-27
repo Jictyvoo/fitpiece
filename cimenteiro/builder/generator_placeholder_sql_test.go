@@ -105,8 +105,8 @@ func TestPlaceholderSqlGenerator_Select__Join(t *testing.T) {
 			"`table_0`.`created_as` AS first_creation "+
 			"FROM table_0 INNER JOIN table_2 ON `table_0`.`uuid` = `table_2`.`zero_id` "+
 			"LEFT JOIN table_2 ON `table_1`.`id` = `table_2`.`one_id` "+
-			"WHERE price <= ? AND "+
-			"? IN (SELECT `table_1`.`price` AS price_field, `table_1`.`created_at` AS created_at_field FROM table_1 WHERE name <> ? OR id > ?) "+
+			"WHERE (price <= ? AND "+
+			"? IN (SELECT `table_1`.`price` AS price_field, `table_1`.`created_at` AS created_at_field FROM table_1 WHERE name <> ? OR id > ?)) "+
 			"OR delivered_at = ?",
 	)
 	failproof.AssertEqualCompare[[]any](
@@ -163,5 +163,30 @@ func TestPlaceholderSqlGenerator_Insert(t *testing.T) {
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,
 		args, []any{"avocado", "fruit", 7284, testDate},
+	)
+}
+
+func TestPlaceholderSqlGenerator_Delete(t *testing.T) {
+	tableZero := elements.TableName{Name: "test_table"}
+	query := New(tableZero)
+	query.Where(
+		query.Or(
+			query.And(
+				query.In(NewFieldExpression("version"), "1.14", "1.16", "1.17", "1.18"),
+				query.Equal("language", "go"),
+			),
+			query.GreaterEqual("version", "1.13"),
+		),
+	)
+
+	generator := PlaceholderSqlGenerator{Query: &query, Placeholder: "?"}
+	sqlStr, args := generator.Delete()
+	failproof.AssertEqual(
+		t, sqlStr,
+		"DELETE FROM test_table WHERE (version IN [?,?,?,?] AND language = ?) OR version >= ?",
+	)
+	failproof.AssertEqualCompare[[]any](
+		t, compareAnySlice,
+		args, []any{"1.14", "1.16", "1.17", "1.18", "go", "1.13"},
 	)
 }
