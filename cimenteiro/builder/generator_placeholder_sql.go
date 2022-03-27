@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 	"sort"
 	"strings"
@@ -19,6 +20,18 @@ func (generator PlaceholderSqlGenerator) buildWhere(sqlCommand Writer, valuesLis
 
 		strResult = utils.RemoveBrackets(strResult)
 		_, _ = sqlCommand.WriteString(strResult)
+	}
+	return valuesList
+}
+
+func (generator PlaceholderSqlGenerator) buildOrganizers(writer Writer, valuesList []any) []any {
+	for _, key := range elements.OrganizersSortOrder() {
+		if item, ok := generator.Query.organizers[key]; ok {
+			_, _ = writer.WriteRune(' ')
+			strSql, args := item.BuildPlaceholder(generator.Placeholder)
+			_, _ = writer.WriteString(strSql)
+			valuesList = append(valuesList, args...)
+		}
 	}
 	return valuesList
 }
@@ -90,12 +103,8 @@ func (generator PlaceholderSqlGenerator) Select() (string, []any) {
 	buildJoinClauses(&sqlCommand, *generator.Query)
 	valuesList = generator.buildWhere(&sqlCommand, valuesList)
 	if len(generator.Query.organizers) > 0 {
-		for _, item := range generator.Query.organizers {
-			sqlCommand.WriteRune(' ')
-			sqlCommand.WriteString(item.Build())
-		}
+		valuesList = generator.buildOrganizers(&sqlCommand, valuesList)
 	}
-
 	return sqlCommand.String(), valuesList
 }
 

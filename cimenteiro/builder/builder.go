@@ -14,7 +14,7 @@ type QueryBuilder struct {
 }
 
 func New(table elements.TableName) QueryBuilder {
-	return QueryBuilder{tableName: table}
+	return QueryBuilder{tableName: table, organizers: map[elements.Organizer]elements.Expression{}}
 }
 
 func expandSlice[T any](originalSlice []T, newCap uint) []T {
@@ -161,7 +161,7 @@ func (query QueryBuilder) buildOrderBy(desc bool, columns ...string) elements.Ex
 
 // OrderBy specify order when retrieve records from database
 func (query *QueryBuilder) OrderBy(columns ...string) *QueryBuilder {
-	query.organizers[elements.OrganizerGroup] = query.buildOrderBy(false, columns...)
+	query.organizers[elements.OrganizerOrder] = query.buildOrderBy(false, columns...)
 	return query
 }
 
@@ -183,7 +183,7 @@ func (query *QueryBuilder) Limit(limit int) *QueryBuilder {
 
 // Offset specify the number of records to skip before starting to return the records
 func (query *QueryBuilder) Offset(offset int) *QueryBuilder {
-	query.organizers[elements.OrganizerLimit] = expressions.PrefixExpression(
+	query.organizers[elements.OrganizerOffset] = expressions.PrefixExpression(
 		"OFFSET",
 		expressions.NewValueExpression(offset),
 	)
