@@ -11,13 +11,13 @@ func compareAnySlice(a, b []any) int {
 	if len(a) != len(b) {
 		return len(a) - len(b)
 	}
+	difference := 0
 	for index, _ := range a {
-		if a[index] == b[index] {
-			return 0
+		if a[index] != b[index] {
+			difference++
 		}
-		return 1
 	}
-	return 1
+	return difference
 }
 
 func TestPlaceholderSqlGenerator_Select(t *testing.T) {
@@ -142,6 +142,26 @@ func TestPlaceholderSqlGenerator_Update(t *testing.T) {
 	)
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,
-		args, []any{"avocado", "fruit", 7284, testDate, "cat", "dog", "elephant", "tiger", "lion", "telha"},
+		args, []any{"avocado", 7284, "fruit", testDate, "cat", "dog", "elephant", "tiger", "lion", "telha"},
+	)
+}
+
+func TestPlaceholderSqlGenerator_Insert(t *testing.T) {
+	tableZero := elements.TableName{Name: "table_0"}
+	query := New(tableZero)
+	generator := PlaceholderSqlGenerator{
+		Placeholder: "?",
+		Query:       query.Fields("name", "type", "size", "created_at"),
+	}
+	testDate := time.Date(1568, time.May, 19, 5, 18, 59, 26, time.UTC)
+
+	sqlStr, args := generator.Insert("avocado", "fruit", 7284, testDate)
+	failproof.AssertEqual(
+		t, sqlStr,
+		"INSERT INTO table_0 (name, type, size, created_at) VALUES (?,?,?,?)",
+	)
+	failproof.AssertEqualCompare[[]any](
+		t, compareAnySlice,
+		args, []any{"avocado", "fruit", 7284, testDate},
 	)
 }

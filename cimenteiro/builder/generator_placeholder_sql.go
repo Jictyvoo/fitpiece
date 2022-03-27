@@ -53,11 +53,12 @@ func (generator PlaceholderSqlGenerator) Insert(values ...any) (string, []any) {
 
 	sqlCommand.WriteString("INSERT INTO ")
 	sqlCommand.WriteString(generator.Query.tableName.Name)
+	sqlCommand.WriteRune(' ')
 	sqlCommand.WriteRune('(')
 	buildSelectColumns(&sqlCommand, *generator.Query)
 	sqlCommand.WriteRune(')')
 
-	sqlCommand.WriteString(" VALUES(")
+	sqlCommand.WriteString(" VALUES (")
 	for index, value := range values {
 		if index > 0 {
 			sqlCommand.WriteRune(',')
