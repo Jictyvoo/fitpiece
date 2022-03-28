@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func Test_ExpressionBuilder(t *testing.T) {
+func Test_ExpressionCreator(t *testing.T) {
 	tableZero := elements.TableName{Name: "table_0"}
 
 	testClause := ClauseCreator.Equal(tableZero.Column("test"), "\"gopher\"")
