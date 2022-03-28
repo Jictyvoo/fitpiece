@@ -3,7 +3,7 @@ package builder
 import "github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 
 const (
-	ClauseCreator __clauseCreator = 0
+	ClauseCreator __clauseCreator = false
 )
 
 func buildSelectColumns(writer utils.Writer, builder QueryBuilder) {

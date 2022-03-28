@@ -7,7 +7,7 @@ import (
 
 // __clauseCreator syntax sugar for create a const namespace that
 // is useful to attach methods and functions
-type __clauseCreator uint
+type __clauseCreator bool
 
 func (query __clauseCreator) Not(expression elements.Expression) elements.Expression {
 	return expressions.PrefixExpression("NOT", expression)
