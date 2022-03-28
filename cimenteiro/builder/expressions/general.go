@@ -26,6 +26,10 @@ func NewValueExpression[T any](value T) elements.Expression {
 	return ValueExpression[T]{value: value}
 }
 
+func NewPairsClauseExpression(first, second elements.Expression) PairsClauseExpression {
+	return PairsClauseExpression{first: first, second: second}
+}
+
 func PrefixExpression(prefix string, value elements.Expression) PairsClauseExpression {
 	return PairsClauseExpression{
 		first:  NewFieldExpression(prefix),

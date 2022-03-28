@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/builder/expressions"
 	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 )
 
@@ -11,40 +12,53 @@ type ClauseBuilder struct {
 	processNext expressionProcessor
 }
 
+func CreateClause() *ClauseBuilder {
+	return &ClauseBuilder{}
+}
+
+func (builder ClauseBuilder) Clause() elements.Expression {
+	return builder.clause
+}
+
 func (builder *ClauseBuilder) registerClause(expression elements.Expression) {
 	if builder.processNext != nil {
 		builder.clause = builder.processNext(expression)
+		builder.processNext = nil
 	} else {
 		builder.clause = expression
 	}
 }
 
-/**********************************************
-* ClauseBuilder section of the QueryBuilder
-**********************************************/
-
 func (builder *ClauseBuilder) Not() *ClauseBuilder {
-	builder.processNext = ClauseCreator.Not
+	currentExpression := builder.clause
+	currentProcessor := builder.processNext
+	builder.processNext = func(expression elements.Expression) elements.Expression {
+		notExpression := ClauseCreator.Not(expression)
+		if currentProcessor != nil {
+			return currentProcessor(notExpression)
+		}
+		return expressions.NewPairsClauseExpression(currentExpression, notExpression)
+	}
 	return builder
 }
 
-func (builder *ClauseBuilder) In(values ...any) *ClauseBuilder {
-	builder.registerClause(ClauseCreator.In(builder.clause, values...))
+func (builder *ClauseBuilder) In(clause elements.Expression, values ...any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.In(clause, values...))
 	return builder
 }
 
-func (builder *ClauseBuilder) InQuery(subQuery *QueryBuilder) *ClauseBuilder {
-	builder.registerClause(ClauseCreator.InQuery(builder.clause, subQuery))
+func (builder *ClauseBuilder) InQuery(clause elements.Expression, subQuery *QueryBuilder) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.InQuery(clause, subQuery))
 	return builder
 }
 
-func (builder *ClauseBuilder) NotIn(values ...any) *ClauseBuilder {
-	builder.registerClause(ClauseCreator.NotIn(builder.clause, values...))
+func (builder *ClauseBuilder) NotIn(clause elements.Expression, values ...any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.NotIn(clause, values...))
 	return builder
 }
 
-func (builder *ClauseBuilder) NotInQuery(subQuery *QueryBuilder) *ClauseBuilder {
-	builder.registerClause(ClauseCreator.NotInQuery(builder.clause, subQuery))
+func (builder *ClauseBuilder) NotInQuery(clause elements.Expression, subQuery *QueryBuilder) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.NotInQuery(clause, subQuery))
 	return builder
 }
 
