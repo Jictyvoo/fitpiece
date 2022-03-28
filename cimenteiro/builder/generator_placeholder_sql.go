@@ -1,8 +1,8 @@
 package builder
 
 import (
-	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
-	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
+	"github.com/jictyvoo/fitpiece/cimenteiro/internal/elements"
+	"github.com/jictyvoo/fitpiece/cimenteiro/internal/utils"
 	"sort"
 	"strings"
 )

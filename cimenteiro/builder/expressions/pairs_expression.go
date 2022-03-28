@@ -2,7 +2,7 @@ package expressions
 
 import (
 	"fmt"
-	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
+	"github.com/jictyvoo/fitpiece/cimenteiro/internal/elements"
 )
 
 type PairsClauseExpression struct {

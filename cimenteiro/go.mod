@@ -1,7 +1,7 @@
-module github.com/wrapped-owls/fitpiece/cimenteiro
+module github.com/jictyvoo/fitpiece/cimenteiro
 
 go 1.18
 
-replace github.com/wrapped-owls/fitpiece/heartcore => ../heartcore
+replace github.com/jictyvoo/fitpiece/heartcore => ../heartcore
 
-require github.com/wrapped-owls/fitpiece/heartcore v0.0.0-00010101000000-000000000000
+require github.com/jictyvoo/fitpiece/heartcore v0.0.0-00010101000000-000000000000

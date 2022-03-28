@@ -1,6 +1,6 @@
 package builder
 
-import "github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
+import "github.com/jictyvoo/fitpiece/cimenteiro/internal/utils"
 
 const (
 	ClauseCreator __clauseCreator = false
