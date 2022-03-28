@@ -167,7 +167,7 @@ func (query *QueryBuilder) OrderBy(columns ...string) *QueryBuilder {
 
 // OrderByDesc specify order when retrieve records from database
 func (query *QueryBuilder) OrderByDesc(columns ...string) *QueryBuilder {
-	query.organizers[elements.OrganizerGroup] = query.buildOrderBy(true, columns...)
+	query.organizers[elements.OrganizerOrder] = query.buildOrderBy(true, columns...)
 	return query
 }
 
