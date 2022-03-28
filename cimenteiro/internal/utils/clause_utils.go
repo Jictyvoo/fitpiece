@@ -1,5 +1,10 @@
 package utils
 
+type Writer interface {
+	WriteRune(rune) (int, error)
+	WriteString(string) (int, error)
+}
+
 func RemoveBrackets(str string) string {
 	if len(str) < 1 {
 		return str

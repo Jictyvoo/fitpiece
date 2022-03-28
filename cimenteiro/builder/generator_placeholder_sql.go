@@ -12,7 +12,7 @@ type PlaceholderSqlGenerator struct {
 	Placeholder string
 }
 
-func (generator PlaceholderSqlGenerator) buildWhere(sqlCommand Writer, valuesList []any) []any {
+func (generator PlaceholderSqlGenerator) buildWhere(sqlCommand utils.Writer, valuesList []any) []any {
 	if generator.Query.where != nil {
 		_, _ = sqlCommand.WriteString(" WHERE ")
 		strResult, args := generator.Query.where.BuildPlaceholder(generator.Placeholder)
@@ -24,7 +24,7 @@ func (generator PlaceholderSqlGenerator) buildWhere(sqlCommand Writer, valuesLis
 	return valuesList
 }
 
-func (generator PlaceholderSqlGenerator) buildOrganizers(writer Writer, valuesList []any) []any {
+func (generator PlaceholderSqlGenerator) buildOrganizers(writer utils.Writer, valuesList []any) []any {
 	for _, key := range elements.OrganizersSortOrder() {
 		if item, ok := generator.Query.organizers[key]; ok {
 			_, _ = writer.WriteRune(' ')

@@ -1,15 +1,12 @@
 package builder
 
-type Writer interface {
-	WriteRune(rune) (int, error)
-	WriteString(string) (int, error)
-}
+import "github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 
 const (
 	ClauseCreator __clauseCreator = 0
 )
 
-func buildSelectColumns(writer Writer, builder QueryBuilder) {
+func buildSelectColumns(writer utils.Writer, builder QueryBuilder) {
 	if len(builder.fields) < 1 {
 		_, _ = writer.WriteRune('*')
 	} else {
@@ -23,7 +20,7 @@ func buildSelectColumns(writer Writer, builder QueryBuilder) {
 	}
 }
 
-func buildJoinClauses(writer Writer, builder QueryBuilder) {
+func buildJoinClauses(writer utils.Writer, builder QueryBuilder) {
 	for _, joinClause := range builder.joins {
 		_, _ = writer.WriteRune(' ')
 		_, _ = writer.WriteString(joinClause.Build())
