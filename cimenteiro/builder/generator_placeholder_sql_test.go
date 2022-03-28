@@ -27,10 +27,10 @@ func TestPlaceholderSqlGenerator_Select(t *testing.T) {
 
 	// Test simple query
 	query.Where(
-		query.Not(
-			query.And(
-				query.Different("type", "cimento"),
-				query.NotIn(expressions.NewValueExpression(49), 10, 20, 30, 40, 50),
+		ClauseCreator.Not(
+			ClauseCreator.And(
+				ClauseCreator.Different("type", "cimento"),
+				ClauseCreator.NotIn(expressions.NewValueExpression(49), 10, 20, 30, 40, 50),
 			),
 		),
 	)
@@ -71,9 +71,9 @@ func TestPlaceholderSqlGenerator_Select__Join(t *testing.T) {
 		tableOne.Column("created_at"), "created_at_field",
 	)
 	subQuery.Where(
-		subQuery.Or(
-			subQuery.Different("name", "argamassa"),
-			subQuery.GreaterThan("id", 630),
+		ClauseCreator.Or(
+			ClauseCreator.Different("name", "argamassa"),
+			ClauseCreator.GreaterThan("id", 630),
 		),
 	)
 
@@ -88,12 +88,12 @@ func TestPlaceholderSqlGenerator_Select__Join(t *testing.T) {
 		InnerJoinOrigin(tableTwo, "uuid", "zero_id").
 		LeftJoin(tableOne, tableTwo, "id", "one_id").
 		Where(
-			query.Or(
-				query.And(
-					query.LessEqual("price", 91.5),
-					query.InQuery(expressions.NewValueExpression("tijolo"), &subQuery),
+			ClauseCreator.Or(
+				ClauseCreator.And(
+					ClauseCreator.LessEqual("price", 91.5),
+					ClauseCreator.InQuery(expressions.NewValueExpression("tijolo"), &subQuery),
 				),
-				query.Equal(
+				ClauseCreator.Equal(
 					"delivered_at",
 					testDate,
 				),
@@ -125,14 +125,14 @@ func TestPlaceholderSqlGenerator_Select__OrderBy(t *testing.T) {
 	generator := PlaceholderSqlGenerator{
 		Placeholder: "?",
 		Query: query.Where(
-			query.Not(
-				query.GreaterThan("id", 42),
+			ClauseCreator.Not(
+				ClauseCreator.GreaterThan("id", 42),
 			),
 		).
 			OrderBy("id", "name", "value").
 			GroupBy("id", "name").
 			Having(
-				query.NotIn(
+				ClauseCreator.NotIn(
 					expressions.NewValueExpression("language"), "python", "java", "kotlin", "c++",
 				),
 			).
@@ -161,9 +161,9 @@ func TestPlaceholderSqlGenerator_Update(t *testing.T) {
 
 	// Test simple query
 	query.Where(
-		query.Or(
-			query.In(expressions.NewFieldExpression("pet"), "cat", "dog", "elephant", "tiger", "lion"),
-			query.Equal("type", "telha"),
+		ClauseCreator.Or(
+			ClauseCreator.In(expressions.NewFieldExpression("pet"), "cat", "dog", "elephant", "tiger", "lion"),
+			ClauseCreator.Equal("type", "telha"),
 		),
 	)
 
@@ -210,12 +210,12 @@ func TestPlaceholderSqlGenerator_Delete(t *testing.T) {
 	tableZero := elements.TableName{Name: "test_table"}
 	query := New(tableZero)
 	query.Where(
-		query.Or(
-			query.And(
-				query.In(expressions.NewFieldExpression("version"), "1.14", "1.16", "1.17", "1.18"),
-				query.Equal("language", "go"),
+		ClauseCreator.Or(
+			ClauseCreator.And(
+				ClauseCreator.In(expressions.NewFieldExpression("version"), "1.14", "1.16", "1.17", "1.18"),
+				ClauseCreator.Equal("language", "go"),
 			),
-			query.GreaterEqual("version", "1.13"),
+			ClauseCreator.GreaterEqual("version", "1.13"),
 		),
 	)
 
