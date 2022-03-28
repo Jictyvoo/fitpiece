@@ -1,103 +1,97 @@
 package builder
 
 import (
-	"github.com/wrapped-owls/fitpiece/cimenteiro/builder/expressions"
 	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/elements"
 )
+
+type expressionProcessor = func(expression elements.Expression) elements.Expression
+
+type ClauseBuilder struct {
+	clause      elements.Expression
+	processNext expressionProcessor
+}
+
+func (builder *ClauseBuilder) registerClause(expression elements.Expression) {
+	if builder.processNext != nil {
+		builder.clause = builder.processNext(expression)
+	} else {
+		builder.clause = expression
+	}
+}
 
 /**********************************************
 * ClauseBuilder section of the QueryBuilder
 **********************************************/
 
-func (query QueryBuilder) Not(expression elements.Expression) elements.Expression {
-	return expressions.PrefixExpression("NOT", expression)
+func (builder *ClauseBuilder) Not() *ClauseBuilder {
+	builder.processNext = ClauseCreator.Not
+	return builder
 }
 
-// RawClause is a clause that is not a field expression
-func (query QueryBuilder) RawClause(expression string) elements.Expression {
-	return expressions.RawExpression(expression)
+func (builder *ClauseBuilder) In(values ...any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.In(builder.clause, values...))
+	return builder
 }
 
-func (query QueryBuilder) In(clause elements.Expression, values ...any) elements.Clause {
-	return elements.Clause{
-		FirstHalf:  clause,
-		Operator:   elements.OperatorIn,
-		SecondHalf: expressions.ArrayExpression(values...),
+func (builder *ClauseBuilder) InQuery(subQuery *QueryBuilder) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.InQuery(builder.clause, subQuery))
+	return builder
+}
+
+func (builder *ClauseBuilder) NotIn(values ...any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.NotIn(builder.clause, values...))
+	return builder
+}
+
+func (builder *ClauseBuilder) NotInQuery(subQuery *QueryBuilder) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.NotInQuery(builder.clause, subQuery))
+	return builder
+}
+
+func (builder *ClauseBuilder) Equal(column string, value any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.Equal(column, value))
+	return builder
+}
+
+func (builder *ClauseBuilder) Different(column string, value any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.Different(column, value))
+	return builder
+}
+
+func (builder *ClauseBuilder) GreaterThan(column string, value any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.GreaterThan(column, value))
+	return builder
+}
+
+func (builder *ClauseBuilder) LessThan(column string, value any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.LessThan(column, value))
+	return builder
+}
+
+func (builder *ClauseBuilder) GreaterEqual(column string, value any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.GreaterEqual(column, value))
+	return builder
+}
+
+func (builder *ClauseBuilder) LessEqual(column string, value any) *ClauseBuilder {
+	builder.registerClause(ClauseCreator.LessEqual(column, value))
+	return builder
+}
+
+func (builder *ClauseBuilder) And() *ClauseBuilder {
+	currentExpression := builder.clause
+	builder.processNext = func(expression elements.Expression) elements.Expression {
+		return ClauseCreator.And(currentExpression, expression)
 	}
+
+	return builder
 }
 
-func (query QueryBuilder) InQuery(clause elements.Expression, subQuery *QueryBuilder) elements.Clause {
-	return elements.Clause{
-		FirstHalf:  clause,
-		Operator:   elements.OperatorIn,
-		SecondHalf: SubQuery(subQuery),
+func (builder *ClauseBuilder) Or() *ClauseBuilder {
+	currentExpression := builder.clause
+	builder.processNext = func(expression elements.Expression) elements.Expression {
+		return ClauseCreator.Or(currentExpression, expression)
 	}
-}
 
-func (query QueryBuilder) NotIn(clause elements.Expression, values ...any) elements.Clause {
-	inExpression := query.In(clause, values...)
-	inExpression.Operator = elements.OperatorNotIn
-	return inExpression
-}
-
-func (query QueryBuilder) NotInQuery(clause elements.Expression, subQuery *QueryBuilder) elements.Clause {
-	inExpression := query.InQuery(clause, subQuery)
-	inExpression.Operator = elements.OperatorNotIn
-	return inExpression
-}
-
-func (query QueryBuilder) Equal(column string, value any) elements.Clause {
-	return elements.Clause{
-		FirstHalf: elements.FieldExpression{
-			Name: column,
-		},
-		Operator:   elements.OperatorEqual,
-		SecondHalf: expressions.NewValueExpression(value),
-	}
-}
-
-func (query QueryBuilder) Different(column string, value any) elements.Clause {
-	clause := query.Equal(column, value)
-	clause.Operator = elements.OperatorDifference
-	return clause
-}
-
-func (query QueryBuilder) GreaterThan(column string, value any) elements.Clause {
-	clause := query.Equal(column, value)
-	clause.Operator = elements.OperatorGreaterThan
-	return clause
-}
-
-func (query QueryBuilder) LessThan(column string, value any) elements.Clause {
-	clause := query.Equal(column, value)
-	clause.Operator = elements.OperatorLessThan
-	return clause
-}
-
-func (query QueryBuilder) GreaterEqual(column string, value any) elements.Clause {
-	clause := query.Equal(column, value)
-	clause.Operator = elements.OperatorGreaterEqual
-	return clause
-}
-
-func (query QueryBuilder) LessEqual(column string, value any) elements.Clause {
-	clause := query.Equal(column, value)
-	clause.Operator = elements.OperatorLessEqual
-	return clause
-}
-
-func (query QueryBuilder) And(first, second elements.Expression) elements.Clause {
-	return elements.Clause{
-		FirstHalf:  first,
-		Operator:   "AND",
-		SecondHalf: second,
-	}
-}
-
-func (query QueryBuilder) Or(first, second elements.Expression) elements.Clause {
-	return elements.Clause{
-		FirstHalf:  first,
-		Operator:   "OR",
-		SecondHalf: second,
-	}
+	return builder
 }

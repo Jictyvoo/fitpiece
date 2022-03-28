@@ -5,6 +5,10 @@ type Writer interface {
 	WriteString(string) (int, error)
 }
 
+const (
+	ClauseCreator __clauseCreator = 0
+)
+
 func buildSelectColumns(writer Writer, builder QueryBuilder) {
 	if len(builder.fields) < 1 {
 		_, _ = writer.WriteRune('*')
