@@ -3,6 +3,7 @@ package builder
 import "github.com/jictyvoo/fitpiece/cimenteiro/internal/utils"
 
 const (
+	// ClauseCreator default const object that holds the methods to create elements.Expression for query clauses
 	ClauseCreator __clauseCreator = false
 )
 

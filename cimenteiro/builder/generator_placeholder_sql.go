@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+// PlaceholderSqlGenerator structure that defines methods to create complete SQL queries
+// with a placeholder and a slice with its values
 type PlaceholderSqlGenerator struct {
 	Query       *QueryBuilder
 	Placeholder string
@@ -36,6 +38,8 @@ func (generator PlaceholderSqlGenerator) buildOrganizers(writer utils.Writer, va
 	return valuesList
 }
 
+// Update takes a map with values in string format and generates a SQL update query
+// with a slice of its arguments
 func (generator PlaceholderSqlGenerator) Update(values map[string]any) (string, []any) {
 	sqlCommand := strings.Builder{}
 	valuesList := make([]any, 0, len(values))
@@ -68,6 +72,9 @@ func (generator PlaceholderSqlGenerator) Update(values map[string]any) (string, 
 	return sqlCommand.String(), valuesList
 }
 
+// Insert takes multiple values in string format and generates a SQL 'insert' query.
+//
+// The values that define which columns will be inserted are defined by the QueryBuilder.Fields method.
 func (generator PlaceholderSqlGenerator) Insert(values ...any) (string, []any) {
 	sqlCommand := strings.Builder{}
 	valuesList := make([]any, 0, len(values))
@@ -91,6 +98,10 @@ func (generator PlaceholderSqlGenerator) Insert(values ...any) (string, []any) {
 	return sqlCommand.String(), valuesList
 }
 
+// Select generates a SQL 'select' query.
+//
+// The values that define which columns will be added to the query are defined by the QueryBuilder.Fields method.
+// In case no fields are added, a select-all query will be generated
 func (generator PlaceholderSqlGenerator) Select() (string, []any) {
 	sqlCommand := strings.Builder{}
 	valuesList := make([]any, 0, len(generator.Query.fields))
@@ -108,6 +119,7 @@ func (generator PlaceholderSqlGenerator) Select() (string, []any) {
 	return sqlCommand.String(), valuesList
 }
 
+// Delete generates a SQL 'delete' query.
 func (generator PlaceholderSqlGenerator) Delete() (string, []any) {
 	sqlCommand := strings.Builder{}
 	var valuesList []any

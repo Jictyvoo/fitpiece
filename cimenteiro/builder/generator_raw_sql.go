@@ -2,10 +2,12 @@ package builder
 
 import "strings"
 
+// RawSqlGenerator structure that defines methods to create complete raw SQL queries
 type RawSqlGenerator struct {
 	Query QueryBuilder
 }
 
+// Update takes a map with values in string format and generates a raw SQL update query
 func (generator RawSqlGenerator) Update(values map[string]string) string {
 	sqlCommand := strings.Builder{}
 	sqlCommand.WriteString("UPDATE ")
@@ -30,6 +32,9 @@ func (generator RawSqlGenerator) Update(values map[string]string) string {
 	return sqlCommand.String()
 }
 
+// Insert takes multiple values in string format and generates a raw SQL 'insert' query.
+//
+// The values that define which columns will be inserted are defined by the QueryBuilder.Fields method.
 func (generator RawSqlGenerator) Insert(values ...string) string {
 	sqlCommand := strings.Builder{}
 
@@ -50,6 +55,10 @@ func (generator RawSqlGenerator) Insert(values ...string) string {
 	return sqlCommand.String()
 }
 
+// Select generates a raw SQL 'select' query.
+//
+// The values that define which columns will be added to the query are defined by the QueryBuilder.Fields method.
+// In case no fields are added, a select-all query will be generated
 func (generator RawSqlGenerator) Select() string {
 	sqlCommand := strings.Builder{}
 
@@ -76,6 +85,7 @@ func (generator RawSqlGenerator) Select() string {
 	return sqlCommand.String()
 }
 
+// Delete generates a raw SQL 'delete' query.
 func (generator RawSqlGenerator) Delete() string {
 	sqlCommand := strings.Builder{}
 	sqlCommand.WriteString("DELETE FROM ")
