@@ -14,7 +14,7 @@ func Test_ExpressionBuilder(t *testing.T) {
 	testClause := CreateClause().
 		Equal(tableZero.Column("test"), "\"gopher\"").
 		Clause()
-	failproof.AssertEqual(t, testClause.Build(), "`table_0`.`test` = \"gopher\"")
+	failproof.AssertEqual(t, testClause.String(), "`table_0`.`test` = \"gopher\"")
 }
 
 func Test_ExpressionBuilder_Not(t *testing.T) {
@@ -29,7 +29,7 @@ func Test_ExpressionBuilder_Not(t *testing.T) {
 		LessThan("price", 5734.89).
 		Clause()
 
-	sqlStr, args := testClause.BuildPlaceholder("?")
+	sqlStr, args := testClause.StringPlaceholder("?")
 	failproof.AssertEqual(t, sqlStr, "((color > ? OR created_at <> ?) AND NOT price < ?)")
 	failproof.AssertEqualCompare[[]any](
 		t, compareAnySlice,
@@ -47,7 +47,7 @@ func Test_ExpressionBuilder_AndOr(t *testing.T) {
 		Clause()
 
 	query.Where(testClause)
-	failproof.AssertEqual(t, query.where.Build(), "type <> 1 AND 2 NOT IN [1, 2, 3, 4, 5]")
+	failproof.AssertEqual(t, query.where.String(), "type <> 1 AND 2 NOT IN [1, 2, 3, 4, 5]")
 
 	// Test deeper interaction
 	testClause = CreateClause().
@@ -59,7 +59,7 @@ func Test_ExpressionBuilder_AndOr(t *testing.T) {
 		Clause()
 
 	failproof.AssertEqual(
-		t, testClause.Build(),
+		t, testClause.String(),
 		"price <= 8000 AND car IN (SELECT * FROM table_0 WHERE type <> 1 AND 2 NOT IN [1, 2, 3, 4, 5]) OR size = \"BIG\"",
 	)
 }

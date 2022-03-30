@@ -11,7 +11,7 @@ func Test_ExpressionCreator(t *testing.T) {
 	tableZero := elements.TableName{Name: "table_0"}
 
 	testClause := ClauseCreator.Equal(tableZero.Column("test"), "\"gopher\"")
-	failproof.AssertEqual(t, testClause.Build(), "`table_0`.`test` = \"gopher\"")
+	failproof.AssertEqual(t, testClause.String(), "`table_0`.`test` = \"gopher\"")
 
 	// Test more complex query
 	query := New(tableZero)
@@ -21,7 +21,7 @@ func Test_ExpressionCreator(t *testing.T) {
 			ClauseCreator.NotIn(expressions.NewValueExpression(2), 1, 2, 3, 4, 5),
 		),
 	)
-	failproof.AssertEqual(t, query.where.Build(), "type <> 1 AND 2 NOT IN [1, 2, 3, 4, 5]")
+	failproof.AssertEqual(t, query.where.String(), "type <> 1 AND 2 NOT IN [1, 2, 3, 4, 5]")
 
 	// Test deeper interaction
 	testClause = ClauseCreator.Or(
@@ -33,7 +33,7 @@ func Test_ExpressionCreator(t *testing.T) {
 	)
 
 	failproof.AssertEqual(
-		t, testClause.Build(),
+		t, testClause.String(),
 		"price <= 8000 AND car IN (SELECT * FROM table_0 WHERE type <> 1 AND 2 NOT IN [1, 2, 3, 4, 5]) OR size = \"BIG\"",
 	)
 }

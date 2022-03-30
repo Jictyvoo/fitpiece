@@ -1,22 +1,45 @@
 package elements
 
-import "fmt"
+import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
+	"strings"
+)
 
 type FieldExpression struct {
 	Name  string
 	Alias string
 }
 
-func (field FieldExpression) Build() string {
-	if len(field.Alias) <= 0 {
-		return field.Name
+func (expression FieldExpression) Build(writer utils.Writer) int {
+	if len(expression.Alias) <= 0 {
+		length, _ := writer.WriteString(expression.Name)
+		return length
 	}
-	return fmt.Sprintf("%s AS %s", field.Name, field.Alias)
+
+	totalLength := 0
+	length, _ := writer.WriteString(expression.Name)
+	totalLength += length
+
+	length, _ = writer.WriteString(" AS ")
+	totalLength += length
+
+	length, _ = writer.WriteString(expression.Alias)
+
+	return totalLength + length
 }
 
-func (field FieldExpression) BuildPlaceholder(placeholder string) (string, []any) {
-	if len(field.Alias) <= 0 {
-		return field.Name, []any{}
-	}
-	return fmt.Sprintf("%s AS %s", field.Name, field.Alias), []any{}
+func (expression FieldExpression) BuildPlaceholder(writer utils.Writer, placeholder string) (int, []any) {
+	return expression.Build(writer), []any{}
+}
+
+func (expression FieldExpression) String() string {
+	builder := strings.Builder{}
+	expression.Build(&builder)
+	return builder.String()
+}
+
+func (expression FieldExpression) StringPlaceholder(placeholder string) (string, []any) {
+	builder := strings.Builder{}
+	_, values := expression.BuildPlaceholder(&builder, placeholder)
+	return builder.String(), values
 }

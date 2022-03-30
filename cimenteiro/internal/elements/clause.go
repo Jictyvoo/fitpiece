@@ -1,7 +1,7 @@
 package elements
 
 import (
-	"fmt"
+	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 	"strings"
 )
 
@@ -34,40 +34,63 @@ type Clause struct {
 	SecondHalf Expression
 }
 
-func (c Clause) Build() string {
-	return fmt.Sprintf("%s %s %s", c.FirstHalf.Build(), c.Operator, c.SecondHalf.Build())
+func (c Clause) Build(writer utils.Writer) int {
+	if firstLength := c.FirstHalf.Build(writer); firstLength > 0 {
+		_, _ = writer.WriteRune(' ')
+		_, _ = writer.WriteString(string(c.Operator))
+		_, _ = writer.WriteRune(' ')
+		secondLength := c.SecondHalf.Build(writer)
+		return firstLength + 2 + len(c.Operator) + secondLength
+	}
+	return 0
 }
 
-func (c Clause) BuildPlaceholder(placeholder string) (string, []any) {
+func (c Clause) BuildPlaceholder(writer utils.Writer, placeholder string) (int, []any) {
 	valueList := make([]any, 0, 2)
-	stringBuilder := strings.Builder{}
+	totalWriteLength := 0
 
 	// Checker for brackets
 	writeBrackets := c.Operator == KeywordAnd || c.Operator == KeywordOr
 	if writeBrackets {
-		stringBuilder.WriteString("(")
+		_, _ = writer.WriteString("(")
+		totalWriteLength += 1
 	}
 
 	// Write first half
-	strResult, argsResult := c.FirstHalf.BuildPlaceholder(placeholder)
-	stringBuilder.WriteString(strResult)
+	lengthResult, argsResult := c.FirstHalf.BuildPlaceholder(writer, placeholder)
+	totalWriteLength += lengthResult
 	valueList = append(valueList, argsResult...)
 
 	// Write operator
 	if len(c.Operator) > 0 {
-		stringBuilder.WriteRune(' ')
-		stringBuilder.WriteString(string(c.Operator))
+		_, _ = writer.WriteRune(' ')
+		lengthResult, _ = writer.WriteString(string(c.Operator))
+		totalWriteLength += lengthResult + 1
 	}
-	stringBuilder.WriteRune(' ')
+	_, _ = writer.WriteRune(' ')
+	totalWriteLength += 1
 
 	// Write second half
-	strResult, argsResult = c.SecondHalf.BuildPlaceholder(placeholder)
-	stringBuilder.WriteString(strResult)
+	lengthResult, argsResult = c.SecondHalf.BuildPlaceholder(writer, placeholder)
+	totalWriteLength += lengthResult
 	valueList = append(valueList, argsResult...)
 
 	// Close brackets
 	if writeBrackets {
-		stringBuilder.WriteRune(')')
+		_, _ = writer.WriteRune(')')
+		totalWriteLength += 1
 	}
-	return stringBuilder.String(), valueList
+	return totalWriteLength, valueList
+}
+
+func (c Clause) String() string {
+	builder := strings.Builder{}
+	c.Build(&builder)
+	return builder.String()
+}
+
+func (c Clause) StringPlaceholder(placeholder string) (string, []any) {
+	builder := strings.Builder{}
+	_, values := c.BuildPlaceholder(&builder, placeholder)
+	return builder.String(), values
 }

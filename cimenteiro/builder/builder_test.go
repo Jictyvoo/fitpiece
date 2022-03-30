@@ -82,8 +82,8 @@ func Test_QueryBuildJoin(t *testing.T) {
 	query.CrossJoin(tableZero, tableOne, "id", "id")
 	if failproof.AssertEqual(t, len(query.joins), 1) {
 		failproof.AssertEqualCompare(t, compareJoins, query.joins[0], testJoins)
-		failproof.AssertEqual(t, query.joins[0].Build(), testJoins.Build())
-		failproof.AssertEqual(t, testJoins.Build(), "JOIN table_1 ON `table_0`.`id` = `table_1`.`id`")
+		failproof.AssertEqual(t, query.joins[0].String(), testJoins.String())
+		failproof.AssertEqual(t, testJoins.String(), "JOIN table_1 ON `table_0`.`id` = `table_1`.`id`")
 	}
 }
 

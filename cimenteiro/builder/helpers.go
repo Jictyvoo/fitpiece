@@ -16,7 +16,7 @@ func buildSelectColumns(writer utils.Writer, builder QueryBuilder) {
 				_, _ = writer.WriteRune(',')
 				_, _ = writer.WriteRune(' ')
 			}
-			_, _ = writer.WriteString(fieldName.Build())
+			_ = fieldName.Build(writer)
 		}
 	}
 }
@@ -24,6 +24,6 @@ func buildSelectColumns(writer utils.Writer, builder QueryBuilder) {
 func buildJoinClauses(writer utils.Writer, builder QueryBuilder) {
 	for _, joinClause := range builder.joins {
 		_, _ = writer.WriteRune(' ')
-		_, _ = writer.WriteString(joinClause.Build())
+		_ = joinClause.Build(writer)
 	}
 }

@@ -1,10 +1,20 @@
 package builder
 
-import "strings"
+import (
+	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
+	"strings"
+)
 
 // RawSqlGenerator structure that defines methods to create complete raw SQL queries
 type RawSqlGenerator struct {
 	Query QueryBuilder
+}
+
+func (generator RawSqlGenerator) buildWhereClause(writer utils.Writer) {
+	if generator.Query.where != nil {
+		_, _ = writer.WriteString(" WHERE ")
+		generator.Query.where.Build(writer)
+	}
 }
 
 // Update takes a map with values in string format and generates a raw SQL update query
@@ -25,10 +35,7 @@ func (generator RawSqlGenerator) Update(values map[string]string) string {
 		sqlCommand.WriteString(field)
 		sqlCommand.WriteRune('\'')
 	}
-	if generator.Query.where != nil {
-		sqlCommand.WriteString(" WHERE ")
-		sqlCommand.WriteString(generator.Query.where.Build())
-	}
+	generator.buildWhereClause(&sqlCommand)
 	return sqlCommand.String()
 }
 
@@ -68,17 +75,15 @@ func (generator RawSqlGenerator) Select() string {
 	sqlCommand.WriteString(generator.Query.tableName.Name)
 
 	for _, joinClause := range generator.Query.joins {
-		sqlCommand.WriteString(joinClause.Build())
+		joinClause.Build(&sqlCommand)
 		sqlCommand.WriteRune(' ')
 	}
-	if generator.Query.where != nil {
-		sqlCommand.WriteString(" WHERE ")
-		sqlCommand.WriteString(generator.Query.where.Build())
-	}
+
+	generator.buildWhereClause(&sqlCommand)
 	if len(generator.Query.organizers) > 0 {
 		for _, item := range generator.Query.organizers {
 			sqlCommand.WriteRune(' ')
-			sqlCommand.WriteString(item.Build())
+			item.Build(&sqlCommand)
 		}
 	}
 
@@ -90,9 +95,7 @@ func (generator RawSqlGenerator) Delete() string {
 	sqlCommand := strings.Builder{}
 	sqlCommand.WriteString("DELETE FROM ")
 	sqlCommand.WriteString(generator.Query.tableName.Name)
-	if generator.Query.where != nil {
-		sqlCommand.WriteString(" WHERE ")
-		sqlCommand.WriteString(generator.Query.where.Build())
-	}
+
+	generator.buildWhereClause(&sqlCommand)
 	return sqlCommand.String()
 }
