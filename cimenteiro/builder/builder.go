@@ -5,6 +5,7 @@ import (
 	"github.com/jictyvoo/fitpiece/cimenteiro/internal/elements"
 )
 
+// QueryBuilder holds methods and information to help build the query correctly
 type QueryBuilder struct {
 	tableName  elements.TableName
 	fields     []elements.FieldExpression
@@ -13,6 +14,7 @@ type QueryBuilder struct {
 	organizers map[elements.Organizer]elements.Expression
 }
 
+// New creates a new QueryBuilder with given tableName to be the base table of the query
 func New(table elements.TableName) QueryBuilder {
 	return QueryBuilder{tableName: table, organizers: map[elements.Organizer]elements.Expression{}}
 }
@@ -23,6 +25,10 @@ func expandSlice[T any](originalSlice []T, newCap uint) []T {
 	return expandedSlice
 }
 
+// Fields adds all given fields to the query.
+//
+// Obs.: This method is intended to be used with fields that not require an alias.
+// For fields with alias, use QueryBuilder.FieldsAs instead
 func (query *QueryBuilder) Fields(fields ...string) *QueryBuilder {
 	size := len(query.fields)
 	// Extends the slice cap, to prevent reallocate inside the loop
@@ -35,6 +41,11 @@ func (query *QueryBuilder) Fields(fields ...string) *QueryBuilder {
 	return query
 }
 
+// FieldsAs adds the fields passed in argument with an alias.
+// This method is intended to be use in pairs, so to pass a single field with a "name" alias, you should do:
+// queryBuilder.FieldsAs("table_1.name", "name")
+//
+// If an odd number of values are passed to this method, the final value will be ignored
 func (query *QueryBuilder) FieldsAs(fields ...string) *QueryBuilder {
 	size := len(query.fields)
 	newLength := len(fields)
@@ -71,16 +82,23 @@ func (query *QueryBuilder) buildJoin(
 	}
 }
 
+// CrossJoin adds a cross join statement to the query.
+// It must have both tables to be joined and the columns that will be compared
 func (query *QueryBuilder) CrossJoin(from, with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	leftJoin := query.buildJoin(from, with, firstColumn, secondColumn)
 	query.joins = append(query.joins, leftJoin)
 	return query
 }
 
+// CrossJoinOrigin adds a cross join statement to the query.
+// It must have only the table to be joined to the base table of the QueryBuilder,
+// and also have the columns that will be compared
 func (query *QueryBuilder) CrossJoinOrigin(with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	return query.CrossJoin(query.tableName, with, firstColumn, secondColumn)
 }
 
+// LeftJoin adds a left join statement to the query.
+// It must have both tables to be joined and the columns that will be compared
 func (query *QueryBuilder) LeftJoin(from, with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	leftJoin := query.buildJoin(from, with, firstColumn, secondColumn)
 	leftJoin.JoinType = elements.JoinLeft
@@ -88,10 +106,15 @@ func (query *QueryBuilder) LeftJoin(from, with elements.TableName, firstColumn, 
 	return query
 }
 
+// LeftJoinOrigin adds a left join statement to the query.
+// It must have only the table to be joined to the base table of the QueryBuilder,
+// and also have the columns that will be compared
 func (query *QueryBuilder) LeftJoinOrigin(with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	return query.LeftJoin(query.tableName, with, firstColumn, secondColumn)
 }
 
+// RightJoin adds a right join statement to the query.
+// It must have both tables to be joined and the columns that will be compared
 func (query *QueryBuilder) RightJoin(from, with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	rightJoin := query.buildJoin(from, with, firstColumn, secondColumn)
 	rightJoin.JoinType = elements.JoinRight
@@ -99,10 +122,15 @@ func (query *QueryBuilder) RightJoin(from, with elements.TableName, firstColumn,
 	return query
 }
 
+// RightJoinOrigin adds a right join statement to the query.
+// It must have only the table to be joined to the base table of the QueryBuilder,
+// and also have the columns that will be compared
 func (query *QueryBuilder) RightJoinOrigin(with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	return query.RightJoin(query.tableName, with, firstColumn, secondColumn)
 }
 
+// InnerJoin adds an inner join statement to the query.
+// It must have both tables to be joined and the columns that will be compared
 func (query *QueryBuilder) InnerJoin(from, with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	innerJoin := query.buildJoin(from, with, firstColumn, secondColumn)
 	innerJoin.JoinType = elements.JoinInner
@@ -110,10 +138,15 @@ func (query *QueryBuilder) InnerJoin(from, with elements.TableName, firstColumn,
 	return query
 }
 
+// InnerJoinOrigin adds an inner join statement to the query.
+// It must have only the table to be joined to the base table of the QueryBuilder,
+// and also have the columns that will be compared
 func (query *QueryBuilder) InnerJoinOrigin(with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	return query.InnerJoin(query.tableName, with, firstColumn, secondColumn)
 }
 
+// OuterJoin adds an outer join statement to the query.
+// It must have both tables to be joined and the columns that will be compared
 func (query *QueryBuilder) OuterJoin(from, with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	outerJoin := query.buildJoin(from, with, firstColumn, secondColumn)
 	outerJoin.JoinType = elements.JoinOuter
@@ -121,10 +154,14 @@ func (query *QueryBuilder) OuterJoin(from, with elements.TableName, firstColumn,
 	return query
 }
 
+// OuterJoinOrigin adds an outer join statement to the query.
+// It must have only the table to be joined to the base table of the QueryBuilder,
+// and also have the columns that will be compared
 func (query *QueryBuilder) OuterJoinOrigin(with elements.TableName, firstColumn, secondColumn string) *QueryBuilder {
 	return query.OuterJoin(query.tableName, with, firstColumn, secondColumn)
 }
 
+// Where takes an elements.Expression and add it to the query to be put inside the where statement
 func (query *QueryBuilder) Where(whereClause elements.Expression) *QueryBuilder {
 	query.where = whereClause
 	return query
