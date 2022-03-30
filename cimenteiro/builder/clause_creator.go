@@ -9,6 +9,7 @@ import (
 // is useful to attach methods and functions
 type __clauseCreator bool
 
+// Not takes an elements.Expression and add the keyword NOT before it
 func (query __clauseCreator) Not(expression elements.Expression) elements.Expression {
 	return expressions.PrefixExpression("NOT", expression)
 }
@@ -23,7 +24,7 @@ func (query __clauseCreator) RawClause(expression string) elements.Expression {
 func (query __clauseCreator) In(clause elements.Expression, values ...any) elements.Clause {
 	return elements.Clause{
 		FirstHalf:  clause,
-		Operator:   elements.OperatorIn,
+		Operator:   elements.KeywordIn,
 		SecondHalf: expressions.ArrayExpression(values...),
 	}
 }
@@ -33,7 +34,7 @@ func (query __clauseCreator) In(clause elements.Expression, values ...any) eleme
 func (query __clauseCreator) InQuery(clause elements.Expression, subQuery *QueryBuilder) elements.Clause {
 	return elements.Clause{
 		FirstHalf:  clause,
-		Operator:   elements.OperatorIn,
+		Operator:   elements.KeywordIn,
 		SecondHalf: SubQuery(subQuery),
 	}
 }
@@ -42,7 +43,7 @@ func (query __clauseCreator) InQuery(clause elements.Expression, subQuery *Query
 // and a list of values that will be added on the right side of the expression
 func (query __clauseCreator) NotIn(clause elements.Expression, values ...any) elements.Clause {
 	inExpression := query.In(clause, values...)
-	inExpression.Operator = elements.OperatorNotIn
+	inExpression.Operator = elements.KeywordNotIn
 	return inExpression
 }
 
@@ -50,7 +51,7 @@ func (query __clauseCreator) NotIn(clause elements.Expression, values ...any) el
 // and a QueryBuilder that will generate an 'select' SQL-string and be added on the right side of the expression
 func (query __clauseCreator) NotInQuery(clause elements.Expression, subQuery *QueryBuilder) elements.Clause {
 	inExpression := query.InQuery(clause, subQuery)
-	inExpression.Operator = elements.OperatorNotIn
+	inExpression.Operator = elements.KeywordNotIn
 	return inExpression
 }
 
@@ -116,7 +117,7 @@ func (query __clauseCreator) LessEqual(column string, value any) elements.Clause
 func (query __clauseCreator) And(first, second elements.Expression) elements.Clause {
 	return elements.Clause{
 		FirstHalf:  first,
-		Operator:   elements.OperatorAnd,
+		Operator:   elements.KeywordAnd,
 		SecondHalf: second,
 	}
 }
@@ -125,7 +126,7 @@ func (query __clauseCreator) And(first, second elements.Expression) elements.Cla
 func (query __clauseCreator) Or(first, second elements.Expression) elements.Clause {
 	return elements.Clause{
 		FirstHalf:  first,
-		Operator:   elements.OperatorOr,
+		Operator:   elements.KeywordOr,
 		SecondHalf: second,
 	}
 }

@@ -5,19 +5,27 @@ import (
 	"strings"
 )
 
-type operator string
+type (
+	operator string
+	keyword  = operator
+)
 
 const (
+	// Operators
+
 	OperatorEqual        operator = "="
 	OperatorDifference   operator = "<>"
 	OperatorGreaterThan  operator = ">"
 	OperatorLessThan     operator = "<"
 	OperatorGreaterEqual operator = ">="
 	OperatorLessEqual    operator = "<="
-	OperatorNotIn        operator = "NOT IN"
-	OperatorIn           operator = "IN"
-	OperatorAnd          operator = "AND"
-	OperatorOr           operator = "OR"
+
+	// Keywords
+
+	KeywordNotIn keyword = "NOT IN"
+	KeywordIn    keyword = "IN"
+	KeywordAnd   keyword = "AND"
+	KeywordOr    keyword = "OR"
 )
 
 type Clause struct {
@@ -35,7 +43,7 @@ func (c Clause) BuildPlaceholder(placeholder string) (string, []any) {
 	stringBuilder := strings.Builder{}
 
 	// Checker for brackets
-	writeBrackets := c.Operator == OperatorAnd || c.Operator == OperatorOr
+	writeBrackets := c.Operator == KeywordAnd || c.Operator == KeywordOr
 	if writeBrackets {
 		stringBuilder.WriteString("(")
 	}
