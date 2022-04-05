@@ -1,8 +1,9 @@
 package elements
 
 import (
-	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 	"strings"
+
+	"github.com/jictyvoo/fitpiece/cimenteiro/internal/utils"
 )
 
 type FieldExpression struct {

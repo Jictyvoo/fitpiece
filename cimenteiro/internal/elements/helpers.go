@@ -1,6 +1,6 @@
 package elements
 
-import "github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
+import "github.com/jictyvoo/fitpiece/cimenteiro/internal/utils"
 
 type Expression interface {
 

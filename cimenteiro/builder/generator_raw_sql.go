@@ -1,8 +1,9 @@
 package builder
 
 import (
-	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 	"strings"
+
+	"github.com/jictyvoo/fitpiece/cimenteiro/internal/utils"
 )
 
 // RawSqlGenerator structure that defines methods to create complete raw SQL queries

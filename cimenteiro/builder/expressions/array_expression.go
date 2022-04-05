@@ -2,8 +2,9 @@ package expressions
 
 import (
 	"fmt"
-	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 	"strings"
+
+	"github.com/jictyvoo/fitpiece/cimenteiro/internal/utils"
 )
 
 // ArrayElementExpression defines how an array can be written in a SQL.

@@ -2,8 +2,9 @@ package builder
 
 import (
 	"fmt"
-	"github.com/wrapped-owls/fitpiece/cimenteiro/internal/utils"
 	"strings"
+
+	"github.com/jictyvoo/fitpiece/cimenteiro/internal/utils"
 )
 
 // SubQueryExpression is the structure expression for sub-queries that implement elements.Expression
