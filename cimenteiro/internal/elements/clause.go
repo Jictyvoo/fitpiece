@@ -46,8 +46,10 @@ func (c Clause) BuildPlaceholder(placeholder string) (string, []any) {
 	valueList = append(valueList, argsResult...)
 
 	// Write operator
-	stringBuilder.WriteRune(' ')
-	stringBuilder.WriteString(string(c.Operator))
+	if len(c.Operator) > 0 {
+		stringBuilder.WriteRune(' ')
+		stringBuilder.WriteString(string(c.Operator))
+	}
 	stringBuilder.WriteRune(' ')
 
 	// Write second half

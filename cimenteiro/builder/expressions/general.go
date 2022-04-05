@@ -35,22 +35,16 @@ func NewValueExpression[T any](value T) elements.Expression {
 }
 
 // NewPairsClauseExpression create a PairsClauseExpression using both the elements.Expression given
-func NewPairsClauseExpression(first, second elements.Expression) PairsClauseExpression {
-	return PairsClauseExpression{first: first, second: second}
+func NewPairsClauseExpression(first, second elements.Expression) elements.Clause {
+	return elements.Clause{FirstHalf: first, SecondHalf: second}
 }
 
 // PrefixExpression create a new PairsClauseExpression with a string prefix
-func PrefixExpression(prefix string, value elements.Expression) PairsClauseExpression {
-	return PairsClauseExpression{
-		first:  NewFieldExpression(prefix),
-		second: value,
-	}
+func PrefixExpression(prefix string, value elements.Expression) elements.Clause {
+	return NewPairsClauseExpression(NewFieldExpression(prefix), value)
 }
 
 // SuffixExpression create a new PairsClauseExpression with a string suffix
-func SuffixExpression(prefix elements.Expression, suffix string) PairsClauseExpression {
-	return PairsClauseExpression{
-		first:  prefix,
-		second: NewFieldExpression(suffix),
-	}
+func SuffixExpression(prefix elements.Expression, suffix string) elements.Clause {
+	return NewPairsClauseExpression(prefix, NewFieldExpression(suffix))
 }
